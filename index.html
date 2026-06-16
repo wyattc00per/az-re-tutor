@@ -324,18 +324,20 @@ function nav(page){
 // HOME - show ALL topics with scores
 function buildHomeList(){
   var list = document.getElementById("homeTopicList");
-  var html = "";
+  list.innerHTML = "";
   for(var i=0;i<TOPICS.length;i++){
     var t = TOPICS[i];
-    var label = t.score < 75 ? "Tap to quiz →" : "✓ Passing";
-    html += "<div class='topic-row' onclick='jumpQuiz(""+t.id+"")'>";
-    html += "<div class='tr-icon'>"+t.icon+"</div>";
-    html += "<div style='flex:1'><div class='tr-name'>"+t.full+"</div><div class='tr-units'>"+t.units+"</div></div>";
-    html += "<span class='tr-score "+t.ic+"'>"+t.score+"%</span>";
-    html += "<span class='tr-cta'>"+label+"</span>";
-    html += "</div>";
+    var label = t.score < 75 ? "Study it" : "Passing";
+    var row = document.createElement("div");
+    row.className = "topic-row";
+    row.setAttribute("data-id", t.id);
+    row.innerHTML = "<div class=\"tr-icon\">"+t.icon+"</div>"
+      +"<div style=\"flex:1\"><div class=\"tr-name\">"+t.full+"</div><div class=\"tr-units\">"+t.units+"</div></div>"
+      +"<span class=\"tr-score "+t.ic+"\">"+t.score+"%</span>"
+      +"<span class=\"tr-cta\">"+label+" &rarr;</span>";
+    row.onclick = (function(id){ return function(){ jumpQuiz(id); }; })(t.id);
+    list.appendChild(row);
   }
-  list.innerHTML = html;
 }
 
 function jumpQuiz(id){

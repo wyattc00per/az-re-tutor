@@ -224,6 +224,11 @@ p.pg-sub{color:var(--text2);font-size:.88rem;margin-bottom:24px}
 .fb-head{font-weight:700;font-size:.9rem;margin-bottom:7px}
 .fb.ok .fb-head{color:var(--green)}
 .fb.no .fb-head{color:var(--red)}
+.fb-correct-ans{
+  background:var(--green-bg);border:1.5px solid var(--green);border-radius:8px;
+  padding:10px 14px;margin:10px 0 4px;font-size:.85rem;color:var(--green);line-height:1.45
+}
+.fb-correct-ans strong{color:var(--text)}
 .fb-body{font-size:.83rem;color:var(--text2);line-height:1.6}
 .fb-stats{margin-top:9px;font-size:.72rem;color:var(--muted);display:flex;gap:12px;flex-wrap:wrap}
 
@@ -637,16 +642,18 @@ async function claude(msgs,sys){
 
 function getSys(){
   const t=T(topicId);
+  const EXPLANATION_RULE = 'EXPLANATION must: (1) Start with "The correct answer is [LETTER]) [restate option] because..." with a clear reason grounded in Arizona law or the ASREB textbook. (2) Then explain why each wrong answer is incorrect. (3) End with one sentence: the key rule to remember for the exam. Never vague — always give the actual reason.';
+
   const fmts={
-    mc:`QTYPE: MULTIPLE_CHOICE\nTOPIC: [specific subtopic]\nQUESTION: [question text]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: [why correct is right; why each wrong answer is wrong]`,
-    tf:`QTYPE: TRUE_FALSE\nTOPIC: [subtopic]\nQUESTION: [statement]\nCORRECT: [TRUE/FALSE]\nEXPLANATION: [why]`,
-    vocab:`QTYPE: VOCABULARY\nTOPIC: [subtopic]\nQUESTION: [Define: term OR Which term means: description?]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: [correct def; why others wrong]`,
-    scenario:`QTYPE: SCENARIO\nTOPIC: [subtopic]\nQUESTION: [2-3 sentence real-world scenario then the question]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: [why correct; cite AZ law or concept]`,
-    math:`QTYPE: MATH\nTOPIC: [subtopic]\nQUESTION: [scenario with numbers]\nA) [answer]\nB) [answer]\nC) [answer]\nD) [answer]\nCORRECT: [A/B/C/D]\nEXPLANATION: [step-by-step calculation]`
+    mc:'QTYPE: MULTIPLE_CHOICE\nTOPIC: [specific subtopic]\nQUESTION: [question text]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: ['+EXPLANATION_RULE+']',
+    tf:'QTYPE: TRUE_FALSE\nTOPIC: [subtopic]\nQUESTION: [statement]\nCORRECT: [TRUE/FALSE]\nEXPLANATION: [Start with "This is TRUE/FALSE because..." then explain the Arizona rule in 2-3 sentences. End with the key exam takeaway.]',
+    vocab:'QTYPE: VOCABULARY\nTOPIC: [subtopic]\nQUESTION: [Define: term OR Which term means: description?]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: ['+EXPLANATION_RULE+' — define the correct term clearly and explain why each wrong term does not fit]',
+    scenario:'QTYPE: SCENARIO\nTOPIC: [subtopic]\nQUESTION: [2-3 sentence real-world scenario then the question]\nA) [option]\nB) [option]\nC) [option]\nD) [option]\nCORRECT: [A/B/C/D]\nEXPLANATION: ['+EXPLANATION_RULE+' — cite the specific Arizona law or ASREB rule that applies]',
+    math:'QTYPE: MATH\nTOPIC: [subtopic]\nQUESTION: [scenario with numbers]\nA) [answer]\nB) [answer]\nC) [answer]\nD) [answer]\nCORRECT: [A/B/C/D]\nEXPLANATION: [Show the full step-by-step calculation to the correct answer, then note what mistake leads to each wrong answer]'
   };
 
   const logSection = askedLog.length>0
-    ? `\nQUESTIONS ALREADY ASKED THIS SESSION — do NOT repeat these topics or phrasings:\n${askedLog.map((q,i)=>`${i+1}. ${q}`).join('\n')}\n`
+    ? '\nQUESTIONS ALREADY ASKED THIS SESSION — do NOT repeat these topics or phrasings:\n' + askedLog.map((q,i)=>(i+1)+'. '+q).join('\n') + '\n'
     : '';
 
   return `You are an expert Arizona real estate licensing exam tutor for ASREB. Tutoring Wyatt Cooper who scored 65% on RE 100 and needs 75% to pass the Pearson State Exam.
@@ -723,10 +730,10 @@ function renderQ(q){
 
   const card=document.createElement('div');
   card.className='q-card';
-  card.innerHTML=`<div class="q-tag ${tagClass}">${tagLabel}</div>
-    ${q.topic?`<div class="q-subtopic">${q.topic}</div>`:''}
-    <div class="q-text">${q.question}</div>
-    <div class="opts" id="opts${Date.now()}"></div>`;
+  card.innerHTML='<div class="q-tag '+tagClass+'">'+tagLabel+'</div>'
+    +(q.topic?'<div class="q-subtopic">'+q.topic+'</div>':'')
+    +'<div class="q-text">'+q.question+'</div>'
+    +'<div class="opts" id="opts'+Date.now()+'"></div>';
   feed.appendChild(card);
 
   const grid=card.querySelector('.opts');
@@ -760,15 +767,23 @@ function answer(btn,q,grid){
     if(b===btn&&!ok) b.classList.add('w');
   });
 
+  // Find the full text of the correct option
+  const correctOptText = q.opts.find(o=>o.startsWith(q.correct+')'))||'';
+
   const fb=document.createElement('div');
   fb.className='fb '+(ok?'ok':'no');
-  fb.innerHTML=`<div class="fb-head">${ok?'✅ Correct!':'❌ Not quite — here's the explanation:'}</div>
-    <div class="fb-body">${q.explanation}</div>
-    <div class="fb-stats">
-      <span>📊 ${correct}/${total} (${Math.round(correct/total*100)}%)</span>
-      <span>🎯 Difficulty: ${diff}</span>
-      <span>🔥 Streak: ${streak}</span>
-    </div>`;
+
+  let fbHTML='<div class="fb-head">'+(ok?'\u2705 Correct!':'\u274c Wrong')+'</div>';
+  if(!ok && correctOptText){
+    fbHTML+='<div class="fb-correct-ans">\u2714 The correct answer was: <strong>'+correctOptText+'</strong></div>';
+  }
+  fbHTML+='<div class="fb-body">'+q.explanation+'</div>';
+  fbHTML+='<div class="fb-stats">'
+    +'<span>\ud83d\udcca '+correct+'/'+total+' ('+Math.round(correct/total*100)+'%)</span>'
+    +'<span>\ud83c\udfaf Difficulty: '+diff+'</span>'
+    +'<span>\ud83d\udd25 Streak: '+streak+'</span>'
+    +'</div>';
+  fb.innerHTML=fbHTML;
   document.getElementById('quizFeed').appendChild(fb);
   scroll();
   setTimeout(nextQ,1500);

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AZ Real Estate Tutor</title>
+<style>
+:root {
+  --bg:#f5f6fa; --white:#fff; --border:#e0e4f0;
+  --gold:#c8860a; --gold-bg:#fff8e6; --gold-bd:#f0d070;
+  --red:#cc3333; --red-bg:#fff1f1;
+  --green:#1e7a45; --green-bg:#edfaf2;
+  --orange:#c05c10; --orange-bg:#fff3e8;
+  --blue:#2856c8; --blue-bg:#eef2ff;
+  --text:#18191f; --text2:#484c62; --muted:#8892a8;
+  --r:12px; --sh:0 1px 6px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;font-size:15px;line-height:1.5}
+
+nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:4px;z-index:50;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.logo{font-weight:800;font-size:.93rem;margin-right:10px;white-space:nowrap}
+.ntab{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:none;background:transparent;color:var(--text2);font:.82rem/1 inherit;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s}
+.ntab:hover{background:var(--bg);color:var(--text)}
+.ntab.on{background:var(--gold-bg);color:var(--gold);font-weight:700;border:1px solid var(--gold-bd)}
+.nav-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.spill{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;background:var(--red-bg);color:var(--red)}
+.spill.pass{background:var(--green-bg);color:var(--green)}
+
+.panel{display:none;padding-top:54px;min-height:100vh}
+.panel.on{display:block}
+#panel-quiz.on{display:flex;flex-direction:column;height:100vh;padding-top:54px;overflow:hidden}
+
+/* HOME */
+.home{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+.banner{background:linear-gradient(130deg,#181b2a,#2a3058);border-radius:var(--r);padding:20px 24px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.banner h2{font-size:.95rem;font-weight:700;margin-bottom:3px}
+.banner p{font-size:.76rem;opacity:.6}
+.bnums{display:flex;align-items:center;gap:10px}
+.bnum{text-align:center}
+.bnum-n{font-size:1.8rem;font-weight:800;line-height:1}
+.bnum-l{font-size:.62rem;text-transform:uppercase;letter-spacing:.06em;opacity:.55;margin-top:2px}
+
+.sec{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:20px 0 10px}
+
+/* ALL TOPICS TABLE - simple list */
+.topic-list{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.topic-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.topic-row:last-child{border-bottom:none}
+.topic-row:hover{background:var(--bg)}
+.tr-icon{font-size:1.1rem;width:32px;text-align:center;flex-shrink:0}
+.tr-name{flex:1;font-weight:600;font-size:.87rem}
+.tr-units{font-size:.71rem;color:var(--muted);margin-top:1px}
+.tr-score{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:20px;flex-shrink:0;white-space:nowrap}
+.sc-crit{background:var(--red-bg);color:var(--red)}
+.sc-low{background:var(--orange-bg);color:var(--orange)}
+.sc-mid{background:var(--gold-bg);color:var(--gold)}
+.sc-pass{background:var(--green-bg);color:var(--green)}
+.tr-cta{font-size:.7rem;color:var(--gold);font-weight:700;white-space:nowrap;flex-shrink:0}
+
+.tip-box{background:#181b2a;border-radius:var(--r);padding:16px 20px;margin-top:20px;color:#fff}
+.tip-box h3{font-size:.72rem;font-weight:700;color:#fbbf24;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.tip{display:flex;gap:8px;font-size:.8rem;margin-bottom:6px;opacity:.85}
+.tip:last-child{margin-bottom:0}
+.tip strong{color:#fbbf24;opacity:1}
+
+/* QUIZ */
+.quiz-bar{background:var(--white);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex-shrink:0}
+.bar-lbl{font-size:.7rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.tsel{padding:5px 9px;border-radius:7px;border:1px solid var(--border);background:var(--white);color:var(--text);font:.8rem/1 inherit;cursor:pointer;outline:none;max-width:190px}
+.tsel:focus{border-color:var(--gold)}
+.divider{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.qpill{padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:var(--white);color:var(--text2);font:.74rem/1 inherit;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s}
+.qpill:hover{border-color:var(--gold);color:var(--text)}
+.qpill.on{background:var(--gold);color:#fff;border-color:var(--gold);font-weight:700}
+.qreset{margin-left:auto;padding:5px 11px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font:.72rem/1 inherit;cursor:pointer;transition:all .12s}
+.qreset:hover{color:var(--red);border-color:var(--red)}
+
+.qfeed{flex:1;overflow-y:auto;padding:18px 16px 10px;display:flex;flex-direction:column;max-width:760px;width:100%;margin:0 auto;align-self:center}
+
+.q-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;text-align:center;padding:40px 20px;gap:8px;color:var(--muted)}
+.q-empty-icon{font-size:2.5rem}
+.q-empty h2{font-size:.97rem;font-weight:700;color:var(--text)}
+.q-empty p{font-size:.82rem;max-width:240px;line-height:1.5}
+.start-btn{background:var(--gold);color:#fff;border:none;padding:12px 26px;border-radius:9px;font:700 .9rem/1 inherit;cursor:pointer;margin-top:6px;box-shadow:0 2px 8px rgba(200,134,10,.3)}
+.start-btn:hover{background:#b07208}
+
+.q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:10px;box-shadow:var(--sh);animation:up .2s ease}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.q-badge{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;margin-bottom:8px}
+.qb-mc{background:var(--blue-bg);color:var(--blue)}
+.qb-tf{background:var(--green-bg);color:var(--green)}
+.qb-vo{background:var(--gold-bg);color:var(--gold)}
+.qb-sc{background:var(--orange-bg);color:var(--orange)}
+.qb-ma{background:#f0eaff;color:#6b3fc8}
+.q-sub{font-size:.71rem;color:var(--muted);margin-bottom:8px}
+.q-text{font-size:.95rem;font-weight:600;color:var(--text);line-height:1.55;margin-bottom:14px}
+
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border-radius:8px;border:2px solid var(--border);background:var(--white);color:var(--text);font:.86rem/1.45 inherit;text-align:left;cursor:pointer;transition:border .12s,background .12s}
+.opt:hover:not(:disabled){border-color:var(--gold);background:var(--gold-bg)}
+.opt-l{width:22px;height:22px;border-radius:50%;background:var(--bg);font:.71rem/1 inherit;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2);transition:all .12s;margin-top:1px}
+.opt:hover:not(:disabled) .opt-l{background:var(--gold);color:#fff}
+.opt:disabled{cursor:default}
+.opt.c{border-color:var(--green);background:var(--green-bg)}
+.opt.c .opt-l{background:var(--green);color:#fff}
+.opt.w{border-color:var(--red);background:var(--red-bg)}
+.opt.w .opt-l{background:var(--red);color:#fff}
+.opt.rv{border-color:var(--green);background:var(--green-bg);opacity:.6}
+.opt.rv .opt-l{background:var(--green);color:#fff}
+
+.fb{border-radius:var(--r);padding:14px 18px;margin-bottom:10px;border-left:4px solid var(--border);box-shadow:var(--sh);animation:up .18s ease}
+.fb.ok{background:var(--green-bg);border-color:var(--green)}
+.fb.no{background:var(--red-bg);border-color:var(--red)}
+.fb-head{font-weight:700;font-size:.88rem;margin-bottom:6px}
+.fb.ok .fb-head{color:var(--green)}
+.fb.no .fb-head{color:var(--red)}
+.fb-ans{background:var(--white);border:1.5px solid var(--green);border-radius:8px;padding:9px 13px;margin:8px 0;font-size:.83rem;color:var(--green);line-height:1.45}
+.fb-ans strong{color:var(--text)}
+.fb-body{font-size:.82rem;color:var(--text2);line-height:1.6}
+.fb-meta{margin-top:8px;font-size:.71rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+
+.thinking{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--muted);box-shadow:var(--sh)}
+.dots{display:flex;gap:4px}
+.dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:b 1.1s ease-in-out infinite}
+.dot:nth-child(2){animation-delay:.18s}
+.dot:nth-child(3){animation-delay:.36s}
+@keyframes b{0%,80%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1);opacity:1}}
+
+.qstats{background:var(--white);border-top:1px solid var(--border);padding:9px 16px;display:flex;align-items:center;gap:16px;flex-shrink:0;flex-wrap:wrap}
+.qstat{text-align:center;min-width:36px}
+.qstat-n{font-size:1rem;font-weight:800;color:var(--text)}
+.qstat-l{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+.qinput{background:var(--white);border-top:1px solid var(--border);padding:10px 14px;display:flex;gap:8px;align-items:flex-end;flex-shrink:0}
+.qi-ta{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;color:var(--text);font:.84rem/1.5 inherit;padding:8px 12px;resize:none;min-height:38px;max-height:90px;outline:none;transition:border .12s}
+.qi-ta:focus{border-color:var(--gold)}
+.qi-ta::placeholder{color:var(--muted)}
+.qi-send{background:var(--gold);border:none;border-radius:8px;color:#fff;font:.83rem/1 inherit;font-weight:700;padding:0 16px;height:38px;cursor:pointer;flex-shrink:0;transition:background .12s}
+.qi-send:hover{background:#b07208}
+.qi-send:disabled{background:var(--border);cursor:not-allowed}
+
+/* STUDY GUIDE / VOCAB */
+.cpage{max-width:800px;margin:0 auto;padding:24px 16px 60px}
+.cpage h1{font-size:1.25rem;font-weight:800;margin-bottom:4px}
+.cpage .sub{color:var(--text2);font-size:.86rem;margin-bottom:20px}
+
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.pick-btn{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:13px 15px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .12s;box-shadow:var(--sh);text-align:left;font-family:inherit}
+.pick-btn:hover{border-color:var(--gold);box-shadow:0 3px 12px rgba(0,0,0,.1)}
+.pick-icon{font-size:1rem;width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pick-body{flex:1;min-width:0}
+.pick-name{font-weight:700;font-size:.83rem;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-units{font-size:.68rem;color:var(--muted)}
+.pick-score{font-size:.72rem;font-weight:700;padding:2px 7px;border-radius:10px;flex-shrink:0}
+
+.back-btn{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text2);font:.78rem/1 inherit;font-weight:600;padding:6px 12px;cursor:pointer;margin-bottom:16px;transition:all .12s;font-family:inherit}
+.back-btn:hover{background:var(--border);color:var(--text)}
+
+.loading{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:44px 20px;text-align:center;box-shadow:var(--sh);color:var(--muted);font-size:.85rem}
+.spin{width:24px;height:24px;border:2.5px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:sp .75s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+.gen{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:24px 28px;box-shadow:var(--sh);font-size:.85rem;color:var(--text2);line-height:1.72}
+.gen h1{font-size:1.05rem;color:var(--text);font-weight:800;margin-bottom:16px}
+.gen h2{font-size:.87rem;font-weight:700;color:var(--gold);margin:16px 0 6px;padding-top:12px;border-top:1px solid var(--border)}
+.gen h2:first-of-type{border-top:none;padding-top:0}
+.gen h3{font-size:.82rem;font-weight:700;color:var(--text);margin:10px 0 3px}
+.gen p{margin-bottom:8px}
+.gen ul{padding-left:16px;margin-bottom:8px}
+.gen li{margin-bottom:3px}
+.gen strong{color:var(--text);font-weight:700}
+.gen hr{border:none;border-top:1.5px solid var(--border);margin:14px 0}
+
+@media(max-width:580px){
+  .ntab span.lbl{display:none}
+  .banner{flex-direction:column;gap:12px}
+  .bnums{justify-content:center}
+  .pick-grid{grid-template-columns:1fr}
+  .gen{padding:16px}
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">📋 AZ RE Tutor</div>
+  <button class="ntab on" onclick="nav('home')" id="nt-home">🏠 <span class="lbl">Home</span></button>
+  <button class="ntab" onclick="nav('quiz')" id="nt-quiz">🎯 <span class="lbl">Quiz Me</span></button>
+  <button class="ntab" onclick="nav('study')" id="nt-study">📖 <span class="lbl">Study Guide</span></button>
+  <button class="ntab" onclick="nav('vocab')" id="nt-vocab">📝 <span class="lbl">Vocabulary</span></button>
+  <div class="nav-r">
+    <span class="spill" id="streakSpill" style="display:none">🔥 <span id="streakN">0</span></span>
+    <span class="spill" id="scoreSpill">65% need 75%</span>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="panel on" id="panel-home">
+<div class="home">
+  <div class="banner">
+    <div><h2>RE 100 State Final · June 8, 2026</h2><p>Pearson State Exam · 60 scored questions · 75% to pass</p></div>
+    <div class="bnums">
+      <div class="bnum"><div class="bnum-n" style="color:#f87171">65%</div><div class="bnum-l">Your score</div></div>
+      <div style="font-size:1.2rem;opacity:.4">→</div>
+      <div class="bnum"><div class="bnum-n" style="color:#fbbf24">75%</div><div class="bnum-l">Need to pass</div></div>
+    </div>
+  </div>
+
+  <div class="sec">Your score on each section — tap any to study it</div>
+  <div class="topic-list" id="homeTopicList"></div>
+
+  <div class="tip-box" style="margin-top:20px">
+    <h3>Key exam facts</h3>
+    <div class="tip"><span>📊</span><span><strong>65 questions total</strong> (60 scored + 5 pretests). You need roughly <strong>45 correct</strong> to pass.</span></div>
+    <div class="tip"><span>⚠️</span><span>Read <strong>NOT</strong> and <strong>EXCEPT</strong> questions slowly — cover answers first and read fully.</span></div>
+    <div class="tip"><span>📚</span><span><strong>Textbook wins:</strong> if ASREB says something different, go with ASREB.</span></div>
+    <div class="tip"><span>🔑</span><span>Focus first on <strong>sections VI, IX, and X</strong> — you scored 33-40% and they cover ~16 questions.</span></div>
+  </div>
+</div>
+</div>
+
+<!-- QUIZ -->
+<div class="panel" id="panel-quiz">
+  <div class="quiz-bar">
+    <span class="bar-lbl">Topic:</span>
+    <select class="tsel" id="topicSel" onchange="onTopicChange()"></select>
+    <div class="divider"></div>
+    <span class="bar-lbl">Type:</span>
+    <button class="qpill on" id="qt-mc" onclick="setQT('mc')">MC</button>
+    <button class="qpill" id="qt-tf" onclick="setQT('tf')">T/F</button>
+    <button class="qpill" id="qt-vocab" onclick="setQT('vocab')">Vocab</button>
+    <button class="qpill" id="qt-scenario" onclick="setQT('scenario')">Scenario</button>
+    <button class="qpill" id="qt-math" onclick="setQT('math')">Math</button>
+    <button class="qreset" onclick="resetQuiz()">↺ Reset</button>
+  </div>
+  <div class="qfeed" id="qfeed"></div>
+  <div class="qstats">
+    <div class="qstat"><div class="qstat-n" id="stC">0</div><div class="qstat-l">Correct</div></div>
+    <div class="qstat"><div class="qstat-n" id="stT">0</div><div class="qstat-l">Total</div></div>
+    <div class="qstat"><div class="qstat-n" id="stP">--</div><div class="qstat-l">Score</div></div>
+    <div class="qstat"><div class="qstat-n" id="stD" style="font-size:.75rem;color:var(--muted)">medium</div><div class="qstat-l">Difficulty</div></div>
+  </div>
+  <div class="qinput">
+    <textarea class="qi-ta" id="qi" placeholder="Ask me anything or type your own answer..." rows="1"
+      onkeydown="qiKey(event)" oninput="qiResize(this)"></textarea>
+    <button class="qi-send" id="qiBtn" onclick="sendMsg()">Send</button>
+  </div>
+</div>
+
+<!-- STUDY GUIDE -->
+<div class="panel" id="panel-study">
+<div class="cpage">
+  <h1>📖 Study Guides</h1>
+  <p class="sub">Pick any topic to generate a full guide from your ASREB textbook.</p>
+  <div class="pick-grid" id="sgGrid"></div>
+  <div id="sgOut" style="display:none"></div>
+</div>
+</div>
+
+<!-- VOCAB -->
+<div class="panel" id="panel-vocab">
+<div class="cpage">
+  <h1>📝 Vocabulary</h1>
+  <p class="sub">Key terms with plain-English definitions, usage examples, and what not to confuse them with.</p>
+  <div class="pick-grid" id="vocabGrid"></div>
+  <div id="vocabOut" style="display:none"></div>
+</div>
+</div>
+
+<script>
+var TB = '\n\n=== UNIT U1A ===\nArizona School of Real Estate and Business Hogan School of Real Estate\n7350 North Dobson Rd., Ste 120 4023 East Grant Road\nScottsdale, AZ 85256 Tucson, AZ 85712\nwww.asreb.com www.hoganschool.com\n© 2025 by Colibri Real Estate. All rights reserved\nPublished 2025. Printed in the United States of America\n26 25 5 6\n978-1-59844-451-3\nNo part of this book may be reproduced or transmitted in any form or by any means, electronic,\nmechanical, photocopying, recording, scanning, or otherwise, or stored in database or retrieval\nsystem, including but not limited to, in any network or other electronic storage or transmission,\nor broadcast for distance learning, except as permitted under Sections 107 or 108 of the 1976\nUnited States Copyright Act, without the prior written permission from the publisher.\nThe publisher makes every reasonable effort to ensure the accuracy and completeness of the\ninformation in this book. Due to the dynamic nature of the material and the possibility of human\nor mechanical error, the reader is encouraged to refer to original sources as the ultimate authority\non this subject. Please keep in mind that the examples presented in this text are for demonstration\npurposes only. Actual values may vary greatly in different regions, states, and cities.\nArizona School of Real Estate and Business, Hogan School of Real Estate, Colibri Real Estate\nand associated logos are trademarks or registered trademarks in the United States and/or other\ncountries. Other registered names and trademarks, etc., used in this publication, even without\nspecific indication thereof, are not to be considered unprotected by the law.\nii\nTABLE OF CONTENTS\nStudent Guide...  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .ix Unit 2-B Contracts and Real Estate\nEmployment Agreements  . . . . . . . . . . . . . . . . . . . . . . . . . . 29\nSession 1: Real Property  . . . . . . . . . . . . . . . . . . . . . 1\nI. Statute of Frauds  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 30\nUnit 1-A Property and Government Rights  . . . . . . . . . . . 3 II. Essential Elements of a Contract  . . . . . . . . . . . . . . . . . . . . 30\nI. Personal Property (Chattel, Personalty)  . . . . . . . . . . . . . . . . 4 III. Classification of Contracts . . . . . . . . . . . . . . . . . . . . . . . . . 30\nII. Real Property (Real Estate, Realty)  . . . . . . . . . . . . . . . . . . . 4 Challenge Activity 2.4  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32\nChallenge Activity 1.1  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6 Employment Agreements . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32\nIII. Government Rights  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6 I. Listings . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 32\nIV. Dedication  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6 II. Buyer Broker Agreements  . . . . . . . . . . . . . . . . . . . . . . . . . 33\nChallenge Activity 1.2  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7 III. Commissions  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 33\nUnit 1-A Quiz  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8 Challenge Activity 2.5  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 34\nUnit 1-B Land Development and Zoning; IV. Antitrust  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35\nArea and Perimeter Math . . . . . . . . . . . . . . . . . . . . . . . . . . . 11 Options and Rights of First Refusal  . . . . . . . . . . . . . . . . . . . . . . 35\nLand Development and Zoning  . . . . . . . . . . . . . . . . . . . . . . . . . 12 I. Option  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35\nI. Land Development Terminology . . . . . . . . . . . . . . . . . . . . . 12 II. Right of First Refusal . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35\nII. Zoning . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12 Challenge Activity 2.6  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 35\nChallenge Activity 1.3  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13 Unit 2-B Quiz  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 36\nPlanned Communities . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 13\nSession 3: Agency and Real Estate\nI. Resale of Units in a Planned Community  . . . . . . . . . . . . . . 13\nBrokerage . . . . . . . . . . . . . . . . . . . . . . . 49\nChallenge Activity 1.4  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14\nArea and Perimeter Math  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14 Unit 3-A Agency Basics  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 51\nDefinitions and Formulas . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14 I. Parties  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52\nUnit 1-B Quiz  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17 II. Fiduciary Duties  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52\nMath Practice 1.1  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 19 III. Agent’s Duties to Customers  . . . . . . . . . . . . . . . . . . . . . . 53\nIV. Client’s Duties to an Agent  . . . . . . . . . . . . . . . . . . . . . . . . 54\nSession 2: Encumbrances and\nChallenge Activity 3.1  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54\nContract Basics . . . . . . . . . . . . . . . . . . 21\nUnit 3-A Quiz  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55\nUnit 2-A Encumbrances and Liens . . . . . . . . . . . . . . . . . . . 23 Unit 3-B Real Estate Brokerage  . . . . . . . . . . . . . . . . . . . . . 57\nI. Encumbrances  . . . . . . . . . . . . . . . . . . . . . . . . . . . . .\n\n=== UNIT U2A ===\nArizona Real Estate Fundamentals\nI. Personal Property 1. Deed. The written document by which a property\nowner as “grantor” conveys to a “grantee” an ownership\n(Chattel, Personalty) interest in real property.\n2. Parties to a deed:\nPersonal property is movable property that is not attached to\na. Grantor - gives a deed\nthe land. Tangible personalty are objects such as potted plants,\nb. Grantee - receives a deed\nfurniture, automobiles, and documents (leases, contracts, deeds\nof trust, promissory notes). Intangible personalty are rights\ni\nand relationships. (Copyrights, patents, trademarks). Personal Remember that the suffix “-or” at the end of a word\nproperty is usually transferred by a bill of sale. Personal property indicates the person who is performing an action or\nwith a less than freehold interest in real property, such as a lease, giving something. The suffix “-ee” at the end of a word\nis chattel real. indicates the person who is receiving something or is\nreceiving the action.\nA. Emblements. These are annual crops produced by labor,\nwhich are personal property. They are also known as\nB. Land. The land is the basic real property. Ownership extends\nfructus industriales (fruits of industry).\nto the sky and down to the center of the earth. Ownership\n1. Emblements are also defined as the right of a tenant\nincludes air rights and subsurface rights.\nfarmer to re-enter the land to cultivate and harvest crops\n1. Land may decrease or increase due to:\nonce after the lease has expired.\na. Erosion. the gradual wearing away of soil\nB. Trade Fixtures. Personal property of a business tenant\nincluding store shelves, counters, etc. b. Avulsion. The sudden separation of land due to\nnatural causes.\n1. Trade fixtures may be removed by the departing tenants\nbefore the lease expires. c. Accretion. The increase of land due to natural\ncauses.\n2. If not removed, they become the property of the owner/\nlandlord. 2. Physical characteristics of land:\na. Fixed location (immovable)\nII. Real Property (Real b. Heterogeneity (non-homogeneous, uniqueness),\nmeaning no two parcels of land are the same.\nEstate, Realty)\nc. Indestructible\n3. Economic Characteristics of land:\nReal property is the land everything attached to it (tenements)\na. Scarcity (limited amount)\nand the rights that accompany it.\nb. Modification (value can be increased by\nA. Real property is transferred by deed.\nimprovements)\n4\nProperty and Government Rights 1-A\nc. Fixity (non-liquid asset, takes time to convert to D. Fixtures. A fixture is an item, which was once personal\ncash without losing principal investment. property, that has been permanently attached to and\nhas become real property. A fixture retains many of the\nd. Situs (location, location, location)\ncharacteristics of personal property. Disputes often arise\nC. Appurtenances. Appurtenances are the rights and\nbetween buyer and seller regarding fixtures. The legal test\nimprovements that are attached to the land and transferred\nused to determine if an item is a fixture can be remembered\nwith the land unless reserved or excepted on the deed.\nby the acronym MARIA\nAppurtenances may be Corporeal or Incorporeal.\n1. M. Method of attachment. How permanent is the\n1. Corporeal Real Estate\nmethod? Attachment itself is not decisive.\na. Improvements such as buildings, fences, trees,\n2. A. Agreement of the parties. If the parties agree, as part\nsidewalks, and perennial plants (fructus naturales-\nof the real estate contract, how an item is to be treated,\nfruits of nature).\nthe agreement is enforceable.\n2. Incorporeal Rights, Relationships and Privileges\n3. R. Relationship to the parties. Is the item needed for\na. Mineral rights (oil, gas, coal rights, etc.) the health and welfare of the property owner? Are the\nb. Air rights (rights above property) parties a landlord and tenant?\nc. Riparian rights (rights of a property adjoining a 4. I. Intent. What was the intent of the annexor? Was the\nriver or a stream to the land beneath the water or to intent for personal use or to improve the real property?\nthe water itself) 5. A. Adaptation. What is the items’ purpose? Is the\nd. Easements. Rights across another person’s land, for purpose of personal use or to improve the real property?\na specific use that benefits the easement holder. 6. Cost is never a factor when determining if an item is a\ne. Hereditament. The right to transfer ownership to fixture.\nheirs. E. Conversion. The process of changing real property to\nf. Bundle of Rights. A term describing all the rights personal property or personal property to real. For example,\nan owner has in real property, including: trees (real property) become personal property upon\nconversion into lumber.\ni. Disposition. The right to transfer all or some\nof the rights to other people. Disposition can a. Severance – converting real property to personal\nbe a sale, transfer, conveyance, grant, gift, property by detaching it from the land.\ndevise, dedication or demise. b. Annexation – converting personal property to real\nii. Exclusion. The right to stop others from using property by attaching it to the land.\nor entering the property.\nFixture Trade Fixture\niii. Enjoyment. The right to free use of the\nproperty without interference from other Real property Personal property of a\npeople or society. commercial tenant\nBecomes part of the\niv. Possession. The right to physically occupy and building Can be removed\nuse the land and make it productive.\nOwned by the property Owned by the tenant\nv. Control. The right to physically alter or change owner\nAddressed under a separate\nthe property.\nIncluded in a sales contract agreement\nE. Mobile/Manufactured Homes in Arizona\n1. Mobile homes and manufactured homes may be real or\npersonal property. They are:\na. Personal property if not legally affixed.\nb. Real property and taxed as real property if legally\naffixed by surrendering the title and recording an\nAffidavit of Affixture.\n2. Affidavit of Affixture. A document used to make a\nmobile/manufactured home rea\n\n=== UNIT U2B ===\nU N I T 1 - B\nL A N D D E V E L O P M E N T\nA N D Z O N I N G ; A R E A A N D\nP E R I M E T E R M AT H\nLearning Objectives Key Terms\n• Identify some of the issues to be considered when Arizona 811 (Blue Stake) Natural Area Open Space\ndeveloping land. Buffer Zone (NAOS)\n• Discuss the rationale for zoning. Building Code Nonconforming Use\n(Grandfathered Use)\n• Contrast a grandfathered use and a variance. CC&Rs\nPlanned Community\n• Recall requirements for handling the resale of units in a Front Footage\nSetback\nplanned community. General Plan\nSite Plan\n• Perform various calculations necessary to measure Master Deed\nVariance\nproperty. Master Planned Community\nZone\n• Recall the square footage of an acre.\nZoning Ordinances\n11\nArizona Real Estate Fundamentals\nLand Development and Zoning\nPublic restrictions—such as zoning ordinances and building II. Zoning\ncodes—can have a significant impact on the use and value of\nreal property. The government has the right to impose these\nZoning Ordinance. A zoning ordinance is a government\nregulations through police power.\nlimitation on the use of land, enacted under police powers, by\nmunicipalities (cities or counties). Public hearings must be held\nI. Land Development to enact zoning ordinances.\nA. Zone. An area set off by municipal authorities for specific\nTerminology\nuses (residential, commercial, agricultural, industrial,\nspecial purpose, etc.). Zoning may also restrict lot size,\nA. General Plan. A long-range governmental or private building size, and aesthetics.\nprogram to regulate the use and development of property B. Buffer Zone. An area separating two incompatibly zoned\nin an orderly manner. Arizona revised statute requires each\nareas from each other.\nmunicipality to prepare and adopt a General Plan.\nC. Setback. The minimum distance a building must be from\nB. Master Planned Community. A large-scale residential plan the street and/or lot lines.\n(including different types of planned unit developments\nD. Variance. A use granted that deviates from the zoning\nor PUDs) with recreational amenities, such as parks, golf\nordinance.\ncourses, lakes, bike paths, and jogging trails.\n1. Most likely granted if the owner shows the zoning poses\n1. A master deed divides the planned community into an undue hardship.\nindividual lots or parcels for development.\n2. For example, a variance might be granted to allow a\nC. Natural Area Open Space (NAOS). An area or a wide homeowner to build a garage closer to the property line\neasement restricting and preserving the use as a natural than the setback allows.\nenvironment.\n3. Notice to neighbors is often required.\nD. Arizona 811 (Blue Stake). When planning to dig in\nArizona, the location of underground utilities may be\nmarked by calling 811 (AZ811.com).\nE. Site Plan. A plan of proposed improvements to a parcel.\nA site plan usually shows a building footprint, parking,\ndrainage, sewer, water and utility lines, lighting, and\nlandscaping. A site plan may be required when applying for\na building permit.\nF. Building Footprint. The area on a site plan that is used for\nthe structure(s).\nG. Building Code. A set of construction requirements adopted\nby local governments to provide a reasonable level of safety\nand public protection.\nE. Nonconforming Use (Grandfathered Use). A use that pre-\ndates the zoning ordinance and, therefore, may continue\nbut may not expand. If the structure is destroyed it may not\nbe rebuilt.\n12\nLand Development and Zoning; Area and Perimeter Math 1-B\nChallenge Activity 1.3\n1. Government regulation and control of the use of land is achieved through ____________________________________.\n2. A Natural Area Open Space can be considered a type of ____________________________________________________.\n3. The minimum distance from the street on which a structure can be built is called a ______________________________.\n4. If a zoning ordinance creates a hardship, a property owner can request a ______________________________________.\n5. A property owner who is allowed to continue using property that does not comply with current zoning ordinances\nhas a _________________________________________________________________.\n6. A long-range government program to regulate use and development is a _____________________________________.\n7. A large residential plan with a large number of recreational amenities is a\n____________________________________ __________________.\n8. An area or wide easement that restricts development and requires use as a natural environment is known as a\n_________________________________________ _________________________.\n9. To locate underground utility lines, call __________________________________________________________________.\n10. A use that pre-dates the zoning ordinance is a ____________________________________________________________.\nPlanned Communities\nUnder Arizona law, a planned community is defined as a real 9. Information regarding litigation pending against the\nestate development that includes real estate owned by an unit owner by the association or against the association\nassociation, e.g., a homeowners’ association (HOA), created by the unit owner\nfor the purpose of managing, maintaining, or improving the\nB. If the community is:\nproperty, and in which the owners of separately owned parcels\n1. Less than 50 units (up to 49 units): Seller must provide\nare mandatory members and required to pay association\nthe information.\nassessments. An HOA is required to be a nonprofit corporation\nformed at the Arizona Corporation Commission. 2. 50 units or more: Association must provide the\ninformation.\nC. The board of directors of the association must meet at least\nI. Resale of Units in a\nannually and there must be an annual audit of the HOA’s\nPlanned Community financial accounts. Meetings must comply with open\nmeeting law requirements.\nA. Within 10 days of receipt of written notice of a pending\nsale, the buyer must be provided with the following:\n1. Copy of bylaws and association rules\n2. Copy of the planned commun\n\n=== UNIT U3A ===\nArizona Real Estate Fundamentals\nChallenge Activity 2.4\n1. The legal age to be considered an adult in Arizona is ________________________.\n2. Acceptance of an offer to purchase creates a contract and is referred to as a\n___________________________________________________.\n3. The type of consideration given when the property is transferred as a gift is\n__________________________________________________.\n4. Most contracts must be in writing because of the _____________________________________________.\n5. A legally enforceable agreement involving two parties, each of which make a promise, is considered a\n_________________________________________________.\n6. A contract in which the parties have performed all of the provisions is _______________________.\n7. An option is an example of a contract that is _________________________________.\n(UNILATERAL / BILATERAL)\n8. A contract to do something illegal is _______________________________________.\n9. A contract that is missing one of the essential elements is _____________________.\n10. The six essential elements of a contract are:\n_____________________________________________________\n_____________________________________________________\n_____________________________________________________\n_____________________________________________________\n_____________________________________________________\n_____________________________________________________\n11. A contract in which all the terms are specified is a(an) _________________________.\n12. A contract created by a party’s actions is a(an) _______________________________.\n13. A contract in which all terms have yet to be performed is a(an) _________________.\n14. A contract in which only one party makes a promise is a _______________________.\nEmployment I. Listings\nAgreements\nA listing agreement is an employment agreement between a\nproperty owner and a broker. The three basic types of listing\nAn employment agreement is a written agreement that agreements are:\nauthorizes or employs a broker to purchase, sell, or manage A. Open Listing. In an open listing, the seller agrees to pay the\nreal property for compensation or commission. By law, real listing broker a commission only if that broker finds a ready\nestate employment contracts: willing and able buyer for the property. In other words,\n• Must have an inception (start) and expiration (termination) the listing broker must be the person who produced the\ndate and may not include automatic renewal provisions. buyer—the procuring cause. The Open listing provides\nthe broker with the least amount of protection.\no Property management agreements may auto-renew.\n1. The listing broker will not be paid if another broker\n• Must be signed by all parties.\nfinds a buyer or if the seller sells the property.\n• May not be assigned to third parties without all parties’\n2. A property owner may enter into more than one listing\nconsent.\nagreement.\n32\nContracts and Real Estate Employment Agreements 2-B\nA. Exclusive Agency Listing. In an exclusive agency listing, b. Could violate agent’s duty to the seller by:\nthe seller appoints the listing broker as the seller’s exclusive i. Reducing the ability to reach the maximum\nagent and agrees to pay the listing broker a commission if number of potential buyers.\nthat broker finds a buyer, or if another broker produces\nii. Marketing the property only to selected\na buyer. The seller reserves the right to sell the property\npersons or groups, which could be a form of\nwithout paying a commission.\ndiscrimination.\nB. Exclusive Right to Sell Listing. In an exclusive right to iii. Requiring buyers to use the listing broker for\nsell listing, the seller appoints the listing broker as the the transaction (“exclusive” to one company).\nseller’s exclusive agent and agrees to pay the listing broker a\n5. “Exclusive” Listing (one company “exclusive”)\ncommission if that broker finds a buyer, if another broker\na. Cooperation and compensation are not offered to\nfinds a buyer, or even if the seller sells the property.\nother brokerage companies.\n1. Offers the MOST protection for the broker.\nb. However, by Arizona Commissioner’s Rules, all\noffers must be presented to the seller.\ni\nExclusive listings often contain a broker protection c. A buyer’s agent may need to obtain a separate\nclause that will entitle the broker to a commission compensation agreement with the buyer to assure\nif the seller sells the property to a buyer that the payment of a commission.\nbroker procured within a specified time after the\nlisting expires.\nII. Buyer Broker\nAgreements\nA buyer-broker agreement, or buyer representation agreement,\nis a written employment contract in which the buyer hires a\nbroker and agrees to pay the broker compensation to assist the\nbuyer in locating and acquiring property. As a fiduciary, a buyer’s\nagent may not exclude properties based on the cooperating\ncommission being offered unless directed to do so by the client.\nA buyer broker agreement forms an exclusive relationship with\nthe buyer and outlines the commission the buyer owes to the\nbuyer’s broker.\nIII. Commissions\nA. Commission is determined by agreement between the\nparties. The law does not set maximums or minimums\non commissions. ADRE does not enforce commission\nC. Other Types of Listings\nagreements.\n1. Multiple Listing. A service, not a type of listing.\nB. Arizona law prohibits licensees from accepting compensation\nBrokers agree to cooperate with and compensate buyer’s\nfrom both parties without the written consent of both\nbrokers to better serve their sellers. The listing broker\nparties.\nmay offer the seller full service or limited service such\nas “MLS entry only” to the seller. C. Commission Liens\n2. Net Listing. A compensation model, not a type of 1. In Arizona, a broker cannot file a lien for unpaid\nlisting agreement. In a net listing, the seller agrees to commissions on a seller’s property.\ntake a specified amount as net proceeds, and the broker 2. In Arizona, a lien for unpaid commissions on\nmay ret\n\n=== UNIT U3B ===\nArizona Real Estate Fundamentals\nPage 1 of 8\nRESIDENTIAL LISTING CONTRACT\nEXCLUSIVE RIGHT TO SELL/RENT Document updated:\nAugust 2024\n1. PARTIES\n1. OWNER/SELLER:\n2. ( “Owner”)\n3. BROKER: acting through\nFIRM NAME\n4. , (“Listing Broker”)\nAGENT’S NAME AGENT’S NAME\n2. PROPERTY\n5. Premises: Owner agrees to sell or rent the real property with all improvements, fixtures, and appurtenances\n6. thereon or incidental thereto, plus the personal property described herein (collectively the “Premises”).\n7. Premises Address: Assessor’s #:\n8. City: County: AZ, Zip Code:\n9. Legal Description:\n10.\n11.\n12.\n13.\n3. LISTING PRICE AND TERMS\n14. Agreement: This Residential Listing Contract - Exclusive Right to Sell/Rent (“Agreement”) is between Owner and Listing\n15. Broker. In consideration of Listing Broker’s agreement to find a ready, willing, and able buyer or tenant, Owner gives\n16. Listing Broker the exclusive and irrevocable right to: n Sell n Rent n Sell and Rent the Premises described above.\n17. Owner acknowledges that signing more than one Exclusive Agency or other form of listing contract for the same Term\n18. could expose the Owner to liability for additional compensation.\n19. Price: The listing price shall be: Sale $ and Rent $ per month, plus (in the case of a rental) all\n20. applicable lease or rental (transaction privilege) taxes or such other price and terms as are accepted by Owner.\n21. Term: This Agreement shall commence on and shall expire at 11:59 p.m. Mountain Standard Time on\n22. (“Expiration Date”). Upon full execution of a contract for sale or lease of the Premises, all rights and obligations\n23. of this Agreement will automatically extend through the date of the actual closing of the sale or lease agreement.\n24. Capacity: Owner or any party that Owner designates to act on their behalf warrants that they have the legal capacity,\n25. full power and authority to enter into this Agreement, deliver marketable title to the Premises, and consummate the\n26. transaction contemplated hereby.\n27. Modification: This Agreement may be modified only in writing signed by Owner and Listing Broker.\n28. Equal Housing Opportunity: Listing Broker and Owner shall comply with all federal, state and local fair housing\n29. laws and regulations, including, but not limited to, non-discrimination based on race, color, religion, sex, handicap,\n30. familial status, national origin, sexual orientation, or gender identity.\n>>\nResidential Listing Contract - Exclusive Right To Sell/Rent • Updated: August 2024\nCopyright © 2024 Arizona Association of REALTORS®. All rights reserved.\nPage 1 of 8\n38\nContracts and Real Estate Employment Agreements 2-B\nPage 2 of 8\nResidential Listing Contract - Exclusive Right to Sell/Rent >>\n4. COMPENSATION\n31. LISTING BROKER COMPENSATION IS NOT SET BY LAW, NOR BY ANY BOARD, ASSOCIATION OF REALTORS®,\n32. MULTIPLE LISTING SERVICE OR IN ANY MANNER OTHER THAN AS FULLY NEGOTIATED BETWEEN LISTING\n33. BROKER AND OWNER IN THIS AGREEMENT. SHOULD THE OWNER CHOOSE TO OFFER COMPENSATION TO A\n34. BUYER BROKER OR TENANT BROKER, THE OFFERED AMOUNT IS ALSO FULLY NEGOTIABLE AND AGREED\n35. UPON AFTER DISCUSSION WITH THE LISTING BROKER.\n36. (OWNER’S INITIALS REQUIRED)\n37. All funds are to be in U.S. currency.\n38. Owner agrees to compensate Listing Broker and other broker, if any, as follows:\n39. (Check if applicable) nn Retainer: Owner agrees to pay Listing Broker a non-refundable retainer fee in the amount of\n40. $ , within five (5) days or days of execution of this Agreement, which is earned when paid, for\n41. initial consultation, research and other services. This fee nn shall nn shall not be credited against the Listing Broker\n42. compensation.\n43. Listing Broker Compensation: If Listing Broker produces a ready, willing and able buyer or tenant in accordance\n44. with this Agreement, or if a sale or rental of the Premises is made by Owner or through any other broker, or otherwise,\n45. during the Term of this Agreement, Owner agrees to pay Listing Broker compensation of:\n46. n Sale: % of the full purchase price OR $ .\n47. Additional Listing Broker Compensation:\n48. Unrepresented Buyer: nn Owner agrees to pay Listing Broker additional compensation of % of the full\n49. purchase price OR $ if the buyer of the Premises is not represented by a buyer broker.\n50. Buyer Broker: nn Owner authorizes Listing Broker to communicate an offer of compensation to a prospective buyer\n51. broker in the amount of % of the full purchase price OR $ (“Offer Amount”).\n52. Owner’s authorization includes consent for the Listing Broker to enter into an agreement with a prospective buyer\n53. broker to compensate the broker if they represent the buyer of the Premises. In such circumstances, Owner shall\n54. provide Listing Broker the funds necessary to pay the agreed upon buyer broker compensation, not to exceed the\n55. Offer Amount. Owner shall also pay Listing Broker the Offer Amount as additional compensation if any agent of Listing\n56. Broker represents the buyer of the Premises.\n57. Owner acknowledges that buyer broker represents the interest of the buyer(s), and not the interest of Owner, in a\n58. transaction unless the agent(s) of Listing Broker represent both Owner and buyer under Limited Representation as\n59. described in Section 6. Owner also acknowledges that the buyer broker may credit part, or all, of their compensation\n60. to the buyer.\n61. n Rental: % of the gross rental amount as calculated for the entire term of the initial lease, OR $ ,\n62. upon execution of lease agreement.\n63. Additional Listing Broker Compensation:\n64. Unrepresented Tenant: nn Owner agrees to pay Listing Broker additional compensation of % of the\n65. gross rental amount as calculated for the entire term of the initial lease OR $ if the tenant of the Premises\n66. is not represented by a tenant broker.\n67. Tenant Broker: nn OOwwnneerr aauutthhoorriizzeess LLiissttiinngg BBrrookkeerr ttoo ccoommmmuunniiccaattee aann ooffffeerr ooff ccoommppeennssaattiioon\n\n=== UNIT U6A ===\nArizona Real Estate Fundamentals\nI. Financing Motivations Example\nA. Borrower On a $50,000 loan at 12% interest with monthly amortized\npayments of $514.31 for 30 years, calculate the:\n1. The opportunity to own real property and build equity,\nwhich is the difference between the property value and • Amount applied toward interest and principal\nthe lien amounts. Many people could not become a for the first three months,\nhomeowner or invest in real estate without financing. • Remaining principal balances at the end of each\n2. Leverage. An increase in the rate of return on an month for the first three months.\ninvestment through using borrowed money. Step 2: Once the payment is calculated, the portion of\neach payment applied to interest and principal and the\n3. Tax Advantages. The interest paid on the loan may be\nremaining balances are calculated as follows:\ntax deductible.\nB. Lender. Loans secured by real estate offer lenders a yield\nMonth 1 Month 2 Month 3\nwith relatively low risk and good security.\nPrincipal Balance 50,000.00 49,985.69 49,971.24\nII. Finance Instruments Interest Rate x 0.12 x 0.12 x 0.12\nAnnual Interest 6,000.00 5,998.28 5,996.55\nA. Promissory Note. A personal promise from a borrower to\nMonths per Year ÷ 12 ÷ 12 ÷ 12\nrepay the debt to the lender. The note serves as evidence\nof the debt and states the terms of the loan (loan amount, Monthly Interest 500.00 499.86 499.71\ninterest rate, payment schedule). Total P&I\n514.31 514.31 514.31\nPayment\ni\nThe note does NOT describe the collateral and is Monthly Interest - 500.00 - 499.86 - 499.71\nusually NOT recorded.\nPrincipal Portion 14.31 14.45 14.60\nBeginning\nB. Mortgage or Trust Deed. Names the property as collateral 50,000.00 49,985.69 49,971.24\nBalance\nfor the debt. It includes provisions for the lender to\nforeclose if the borrower is in default. The mortgage or trust - Principal\n- 14.31 - 14.45 - 14.60\ndeed includes the legal description of the property and is Portion\nrecorded by the lender to establish the priority of the lien. Remaining\n49,985.69 49,971.24 49,956.64\nBalance\nIII. Interest Rates\nB. Balloon Payment. The last payment is larger than the\nA. Contract Rate/Note Rate (Face Rate, Nominal Rate).\nmonthly payments. The loan is partially amortized or\nThe rate specified in the promissory note.\ninterest only with the last payment being a balloon payment.\nB. Legal Rate. In Arizona, this is the rate that would apply\nC. Budget Loan. Payments cover PITI (Principal, Interest,\nwhen no specific rate appears in an agreement. It is also\nTaxes, Insurance). Taxes and insurance go into an escrow\nthe rate that would apply to judgments unless the court\naccount (reserve account or impound account). The lender\nstipulated a different rate. The legal rate for judgments is\npays the taxes and insurance on behalf of the borrower from\n1% over the prime rate on the day the judgment is entered\nthe account when due. This has the effect of setting aside\nor 10% whichever is lesser.\n(budgeting) money each month to pay these expenses.\nC. Usury. Charging more than the rate set by law is usury.\nD. Straight Loan (Term Loan). The borrower pays interest-\nArizona does not set a maximum on contract rates of\nonly during the term of the loan with principal due at\ninterest on real estate loans.\nmaturity (balloon payment). Construction loans and\nHELOCs are commonly paid interest-only.\nIV. Payment Plans\nE. Negative Amortization. The monthly payments are less\nthan the interest due. The interest shortage is added to\nA. Amortized (Fully Amortized). Equal periodic payments of\nthe unpaid principal, and the loan balance increases over\nthe principal and interest (P & I).\nthe term of the loan. Home equity conversion loans and\n• Principal. The original loan amount borrowed or graduated payments loans are negatively amortized loans.\ncurrent balance.\ni\n• Interest. The charge made to borrow money or in other The pattern of payments, interest rate, stop (maturity)\nwords, the return to the lender. In real estate loans the date, etc., are found in the promissory note, not in\ninterest is usually simple interest. the mortgage or trust deed. Interest payments on real\nestate loans are paid in arrears.\n106\nLoan Repayment Plans, Loan Types, and Clauses 5-A\nChallenge Activity 5.1\n1. A loan in which the monthly payment of principal and interest is level and constant is a(an)\n_______________________________________________.\n2. The amount of money that is borrowed is the _____________________________________________________________.\n3. The charge made to borrow money is the ________________________________________________________________.\n4. Interest on real estate loans is usually ___________________________________________ interest.\n5. When one payment on a loan (usually at the end of the loan term) is larger than the regular monthly payment, it is\nknown as a ________________________________________________.\n6. A loan in which the payment includes principal, interest, taxes, and insurance is known as a(an)\n__________________________________________________________.\n7. In a budget loan, the taxes and insurance are held in a(an) _________________________________, also called a\n_________________________________________________________.\n8. A loan in which the payments are interest only is a(an) __________________________________ loan, also called a\n______________________________ loan.\n9. A loan in which the payment does not even cover the interest due and which causes the principal balance to increase\nis a(an) ___________________________________________ loan.\n10. Charging more than the lawful rate of interest is known as __________________________________________________.\n11. The interest rate that is specified in the note is known as the _________________________________ or the\n_____________________________________________________________________________.\n12. The rate that would apply when no specific rate is stated in the note is known as the ____________________________.\nV. Types of Loans F\n\n=== UNIT U6B ===\nArizona Real Estate Fundamentals\nV. Loan Fees G. HOA Reserve Funding\n1. FHA loans and other loans require the reserves for a\nA. Discount Points/Buydown. A fee charged by a lender to homeowners’ association to be at least 10% of HOA\nincrease the lender’s yield and to reduce the borrower’s budgeted income and at least 20% if owner-occupancy\ninterest rate (buydown). rates are less than 50%.\n1. The effect of a point on the interest rate is 1/8 of 1%.\n2. 1 discount point = 1% of the loan amount in cash VII. Seller Financing\nvalue.\nWhen the seller finances all or part of the sale of property\nExample\nfor the buyer, it is called carryback financing or a purchase\nmoney mortgage.\nLoan Points Dollar Discount\nA. The buyer executes a note and mortgage (or deed of trust)\n$100,000 2 $2,000\nto the seller for a portion of the purchase price.\n$150,000 3 $4,500 B. Seller carryback financing is considered to be a consumer\n$200,000 4 $8,000 credit transaction when a buyer is acquiring the property\nfor personal, family, or household purposes (owner-\noccupied, one- to four-family residence).\nB. Origination Fee. A fee charged by the lender to cover the C. It is a non-consumer credit transaction when the buyer is\nacquiring the property for business purposes.\ncosts to originate the loan.\nC. Tax Service Fee. A charge to hire a tax service company to D. Special rules apply when the buyer or seller is a limited\nliability company (LLC) or other entity.\ninform a lender when property taxes are due and payable.\nD. Underwriting Fee. A charge made to offset the cost of\ndetermining the borrower’s ability to repay the loan and if VIII. Loan Assumption\nthe property meets the basic loan criteria.\nAn assumption is a situation in which the buyer does not\nPredatory Lending originate a new loan but takes over the payments on an existing\nloan and assumes personal liability.\nA. Loans that take advantage of ill-informed or desperate\nA. If the seller does not want to remain liable for the loan, the\nconsumers through excessively high fees, misrepresented loan\nseller must get a written release from the lender.\nterms, frequent refinancing that does not benefit the borrower.\nB. Novation. Novation is the process of the lender rewriting\nB. Goal may be to strip a property of its equity or to profit by\nthe terms of an existing loan, substituting the buyer as the\ncharging exorbitant fees; foreclosure is often the final outcome.\ndebtor, and releasing the seller from liability. If the original\nborrower (seller) wants to be released of liability for the\nVI. Loan Qualifying loan, the seller needs to get a written release from the\nlender.\nA. Prequalification. The initial step in the loan application C. Reduction Certificate (Assumption Letter). A statement\nprocess. Provides an estimate of how much a buyer can given by the lender to the buyer to verify the loan balance\nqualify to borrow. and terms when the buyer takes over payments on an\nB. Preapproval. Occurs when the borrower has completed existing loan.\na Uniform Residential Loan Application (URLA/\nFNMA1003) and the lender has performed a thorough\nreview of the borrower’s credit and income indicating a\nstrong probability the loan will close.\nC. Rate Lock. A lender guarantee that the interest rate will not\nchange prior to closing.\nD. Floating Rate. The interest rate is not locked and could\nchange prior to closing.\nE. Tri-Merged Credit Report. A single credit report that\nbrings together data from all three major credit reporting\nagencies.\nF. Credit Score. An objective means of determining the\ncreditworthiness of potential borrowers based on a\nmathematical formula evaluating a person’s credit history\nand current use of credit.\n116\nLoan Programs, Fees, Qualifying, and Markets 5-B\nChallenge Activity 5.5\n1. An amount charged by a lender to increase the lender’s yield and/or lower the borrower’s interest rate is known as\n_______________________________________________________________________.\n2. One discount point is equal to _____________________________ of the loan in dollars.\n3. A charge made by a lender to offset the cost of originating a loan is a(an) _____________________________________.\n4. A charge to offset the cost of qualifying a borrower is a(an) _________________________________________________.\n5. The initial process that provides a borrower with how much they can afford is _________________________________.\n6. After completing a loan application and the lender has thoroughly reviewed a borrower’s credit, a borrower has been\n____________________________________________.\n7. A guarantee from a lender that the interest rate will not change is a __________________________________________.\n8. If the interest rate may change before closing, it is known as a _______________________________________________.\n9. A document that brings together the data from all three major credit agencies is a\n_____________________________________________________________________.\n10. A number determined by a mathematical process to determine a person’s creditworthiness is a\n________________________________________________.\n11. If a borrower is obtaining the loan for personal, family or household purposes it is known as a\n__________________________________________________________________.\n12. When a buyer takes over payments and liability for an existing loan, it is a(an) _________________________________.\n13. The process of re-writing an existing loan, substituting a new borrower, and releasing the former borrower of liability\nis _______________________________________________.\n14. A document that verifies the loan terms and is given by a lender to a buyer who is assuming an existing loan is a(an)\n____________________________________________________________________________________.\nFinancing Markets B. Insurance Companies\n1. Make large loans directly to commercial and industrial\nThe process of originating, processing, underwriting, closing, borrowers.\nand funding a mortgage loan occurs in the primary mortgage 2. Or\n\n=== UNIT U9B ===\nArizona Real Estate Fundamentals\n14. The notice of transfer form for a septic system must 21. Land that is abandoned, idled, or underused because\nbe filed with the ADEQ within: redevelopment and/or expansion is complicated by\nenvironmental contamination is a:\nA. 15 days after the inspection\nB. 15 days after closing A. greenfield\nC. 6 months after the inspection B. grayfield\nD. 6 months after closing C. brownfield\nD. blackfield\n15. Water Quality Assurance Revolving Fund sites\nare another way of describing environmentally 22. In reviewing an offer, the buyer asks the agent about\ncontaminated sites that are regulated by: the tax consequences. The agent should:\nA. the Arizona Department of Environmental Quality A. have the offer reviewed by an estate planner\nB. the Comprehensive Environmental Response B. suggest the buyer see an accountant or tax\nClean-up Liability Act attorney\nC. Arizona’s assured water supply regulations C. prepare the offer with a tax contingency clause\nD. Federal Superfund D. have the broker review the offer\n16. Which type of business would be LEAST LIKELY to 23. Income from salaries or commissions is:\nhave a contamination problem?\nA. ordinary income\nA. Dry cleaner B. short-term income\nB. Retail jewelry store C. capital gain income\nC. Dairy farm D. pass-through income\nD. Sign painter\n24. On a personal residence, what is the maximum loan\n17. CERCLA liability generally attaches four broad amount on which interest may be deducted for tax\ncategories of parties responsible for the cleanup of purposes?\na particular contaminated site. All of the following\nA. $250,000\nparties would be responsible EXCEPT:\nB. $500,000\nA. current owners and operators of the site C. $750,000\nB. past owners or operators at the time of sale D. $1,000,000\nC. persons who arranged for the disposal of\nhazardous substances 25. When a limited liability company has net income:\nD. real estate brokerage who arranged the A. the LLC pays tax on the income\ntransaction B. the income passes through to the individual\nmembers\n18. Which of the following would NOT be considered an\nC. no tax is paid by the LLC or its members\nenvironmental hazard?\nD. only 50% of the income is passed through to the\nA. Proximity to a dump area members\nB. Air pollution\nC. Prior use of the property by a dry cleaner 26. What is NOT considered to be an operating expense\nD. Leaking underground water storage tanks on income property?\nA. Property tax\n19. Radon gas would primarily be found in which of the\nB. Insurance\nfollowing substances?\nC. Repairs and maintenance\nA. Insulation material D. Mortgage payments\nB. Lead-based paint\nC. Underground minerals 27. Unlike-kind property received or given in an\nD. Building materials containing formaldehyde exchange is:\nA. excess rent\n20. What would MOST LIKELY cause a mold hazard?\nB. boot\nA. Backed up sewer C. net income\nB. Well-ventilated area D. cash flow\nC. Decaying rock\nD. Insufficient insulation\n176\nInvestments, Income Tax, and Environmental Issues 8-A\n28. To qualify for the exclusion of capital gain tax on the\nsale of a personal residence:\nA. the seller must purchase another property of equal\nor greater value\nB. the seller must be over 65 years of age\nC. all proceeds must be reinvested in another home\nD. the seller must have owned and lived in the house\nfor 2 out of the previous 5 years\n29. The maximum amount of gain that would be tax-\nfree to a married couple who sells their personal\nresidence would be:\nA. $125,000\nB. $250,000\nC. $500,000\nD. unlimited\n30. A property owner may take depreciation for income\ntax purposes on all of the following EXCEPT:\nA. a home rented to friends\nB. an apartment building\nC. a vacant duplex\nD. land held for future profit\n31. In order to qualify for a tax-deferred exchange, the\nproperties must be:\nA. same monetary value\nB. like-kind\nC. matching equities\nD. equal mortgage amounts\n32. When a person declares a tax-free gain on a personal\nresidence, the minimum holding period is:\nA. 12 months\nB. 18 months\nC. 2 years\nD. none required\n177\nU N I T 8 - B\nE S TAT E S I N R E A L\nP R O P E RT Y\nLearning Objectives Key Terms\n• Recall characteristics of various types of freehold Contract Rent Holdover Tenancy\nestates. Conventional Life Estate Lessee\n• Recall characteristics of various types of leasehold Demise Lessor\nestates.\nEconomic Rent Life Estates\n• Identify a trade fixture.\nEstate Life Tenant\n• Contrast subleasing and assignment of lease.\nEstate (Tenancy) for Years Negative Leasehold\nEstate at Sufferance Positive Leasehold\nEstate at Will Quiet Enjoyment\nEstate from Period to Period Remainderman\nEstate in Remainder Reverter\nEstate in Reversion Sublease (Sandwich Lease)\nExcess Rent Trade Fixtures\nFee Simple Absolute Waste\n179\nArizona Real Estate Fundamentals\nFreehold Estates\nAn estate is defined as the present or future degree, quantity, II. Life Estates\nnature, and extent of ownership interest and/or possession that\na person has in real property. There are two major categories Ownership interests created by the granting of an estate for\nof estates, freehold and leasehold. A freehold estate is an the life of a certain person. The grantee (holder of the interest)\nownership interest that can be a fee simple estate or a life estate. is a life tenant and is the measuring life. Life estates are not\ninheritable as the estate terminates upon the life tenant’s death.\nI. Fee Simple Estates A life estate can be created by grant or by reservation.\nA. Conventional Life Estate. A life estate created by one\nA. Fee Simple Absolute (Fee, Fee Simple, Absolute Fee) person for the life of another person.\n1. Highest form of ownership and the most common 1. The life tenant may possess and profit from the property\nform of ownership. during their life and may sell or lease their estate but\n2. The owner of a fee simple estate holds all the rights of may not will their interest or commit waste.\nthe bundle, for an indefinite period of time. a. The life tenant’s interest terminates at the death of\nB. Fee Sim\n\n=== UNIT U10B ===\nArizona Real Estate Fundamentals\n14. In a commercial lease, what limits increases in the 19. In a commercial lease, the landlord allows tenants to\nlandlord’s costs such as taxes and insurance? use the parking lots. If the building is sold:\nA. Common area maintenance fees A. nothing would change regarding the use of the\nB. Expense stop clause parking lot\nC. Tenant improvements B. the terms of use must be renegotiated\nD. Escalator clause C. the tenants must now pay the new owner to use\nthe parking lot\n15. A lease in which the lessor completes improvements D. the entire lease terminates\nto allow the lessee to immediately start business is:\n20. Which of the following items would normally be\nA. turnkey lease\nconsidered to be a trade fixture?\nB. tenant improvements\nA. Lighting fixtures\nC. certificate of occupancy\nB. Plumbing fixtures\nD. proprietary lease\nC. Store shelves\nD. Rafters and joists\n16. Under the Federal Protecting Tenants at Foreclosure\nAct, all of the following are correct EXCEPT:\n21. A tenant rents a commercial space and installs a\nA. tenants must receive at least 90 days’ notice to range hood above an oven used in the tenant’s\nvacate business. The range hood is a(an):\nB. leases that were in force prior to the beginning of A. improvement to the property and part of the real\nforeclosure must be honored estate\nC. tenants who are evicted must receive “cash for B. fixture that is permanently attached and cannot be\nkeys” removed\nD. the act does not protect commercial tenants C. trade fixture and can be removed by the tenant\nprior to the lease expiration\n17. A commercial tenant has 10 years remaining on a D. trade fixture that can be removed if the tenant\n15-year lease. If the lender who placed a loan three pays the landlord for the cost of the range hood\nyears ago acquires the property after a foreclosure,\nthe lease could be terminated if the:\nA. tenant had executed an estoppel agreement in\nfavor of the lender\nB. lessor had given an assignment of rents to the\nlender\nC. lender had subordinated its interest to the tenant\nD. tenant had subordinated its interest to the lender\n18. Which of the following lease arrangements would a\nlandlord be LEAST LIKELY to use with a retail tenant\nin a shopping center?\nA. Gross lease\nB. Net lease\nC. Percentage lease\nD. Index lease\n194\nU N I T 9 - B\nM E T H O D S O F OW N E R S H I P\nA N D TA K I N G T I T L E\nLearning Objectives Key Terms\n• Define “sole and separate property,” how it is acquired, Community Property\nmaintained, and the disposition of interests. Community Property with Right of Survivorship (CPWRS)\n• Explain tenancy in common and the legal assumptions Joint Tenancy with Right of Survivorship\nin the creation and disposition of separate interests.\nPartition Suit\n• Explain joint tenants with rights of survivorship, the Severalty Ownership\nlegal requirements to create, and the disposition of\nTenancy in Common\ninterest by sale or death.\n• Describe community property with rights of\niCaution: Many of the topics discussed in this unit\nsurvivorship, the requirements to create or terminate.\nfall within the practice of law. Any advice given to a\nbuyer or seller could be construed as legal advice.\nThe Arizona Association of REALTORS® purchase\nagreement states: “Taking title may have significant\nlegal, estate planning, and tax consequences.”\nLicensees should, therefore, always be prepared to\nrecommend that customers, clients, and principals\nseek legal counsel on issues such as taking title or\nestate-planning to avoid the unauthorized practice\nof law.\n195\nArizona Real Estate Fundamentals\nI. Tenancy In Severalty 2. In community property, each spouse holds a 50% undivided\ninterest.\n(Sole and Separate\n3. To sell or transfer real property held as community\nOwnership) property, both spouses must sign the sales contract and/or\ndeed conveying the property. A spouse can have a financial\nSeveralty ownership is ownership by one person. interest in community property even if the spouse’s name is\nnot on the deed.\nA. Natural or legal persons, e.g., corporations, cities, LLCs,\netc., may own all (100%) of a property or a percentage 4. To sell or transfer personal property held as community\ninterest in a property in severalty. property, either spouse may sign the agreement because\nArizona law considers both spouses to be equal managers of\nB. At the death of a natural person who owns their interest\npersonal property.\nin severalty, the decedent’s interest passes to their heirs\nthrough probate. In other words, if the decedent had a will 5. If held as community property, at the death of one spouse,\n(died testate), the will is followed. If the decedent had no the deceased spouse’s half passes to his or her heirs (named\nwill (died intestate) the property is distributed to the heirs in their will or by law if intestate) through probate. The\nunder Arizona laws of succession. surviving spouse retains their half share. There is no\nautomatic right of survivorship in basic community\nC. Two or more persons may own percentage interests, in\nproperty.\nseveralty, in the same property. When this occurs, their\ninterests are “undivided” (cannot be separated), and\ncollectively they hold ownership of the whole property as iAn undivided interest refers to all owners having the\ntenants in common. unity of possession. The land itself is not divided and\neach owner has the right to enjoy the entire property.\niDon’t be confused about the word severalty. It might\nsound as though it implies “several” people, in reality\nit means that one owner’s interest has been severed\nIII. Community Property\nfrom the interests of all others. Ownership by two or\nmore persons is called concurrent ownership. With Right of\nSurvivorship (CPWRS)\nII. Community Property\nA. Created by Arizona Legislature in 1994.\nIn Arizona, property acquired by spouses during marriage is\ncommunity property. Property received by gift or inheritance, B. CPWRS allows spouses to hold property as community\nproperty while living, but at the deat\n\n=== UNIT U11A ===\nArizona Real Estate Fundamentals\n27. H, Y, K, and R co-own a property as joint tenants.\nWhen R, K, and Y are killed in a car accident, what is\nH’s interest in the property?\nA. H is a joint tenant with 100% interest\nB. H owns the property in severalty\nC. H still owns 25%, and the rest is split between the\nheirs of R, K, and Y\nD. The estate ends at the death of the majority of the\nco-owners\n28. A and B each own a one-third interest in a property\nas joint tenants with right of survivorship. D owns\na one-third interest in the property as a tenant in\ncommon with A and B. When B dies, what happens to\nhis interest in the property?\nA. It is split equally, so A and D each have a 50%\ninterest\nB. It goes to A, who now has a two-thirds interest\nC. It goes to B’s heirs, leaving A and D with their one-\nthird interest\nD. It must go to probate court for a determination\n202\n1100\nSession 10\nGroup Ownership\nand Deeds\nU n i t 1 0 - A : G ro u p O w n e r s h i p, Co n d o s,\nCo o p e r a t i v e s, a n d O w n e r s h i p\nTr a n s f e r s\nBusiness organizations, non-profit groups, and other companies may own property in severalty\nor as various forms of co-ownership. In this unit, we’ll discuss various business entities and\nthe options for property ownership. Also, we’ll contrast the characteristics of condominiums,\ncooperatives, and other alternative ownership options. Finally, we’ll review basic concepts and\nprocedures associated with the transfer of real property, whether upon the death of the owner\nor through other involuntary or voluntary means.\nU n i t 1 0 - B : D e e d s\nA deed is the instrument that conveys all or part of the grantor’s interest (the grantor’s title),\nif any, in real property. Title is the owner’s interest; the deed is the document that evidences\nthe owner’s title. In this unit, we’ll discuss the use of different types of deeds and the essential\nelements required for a deed to be valid. We’ll also see how recording a deed makes its existence\nclear to third parties as part of the public record and protects the owner’s interest.\n203\nU N I T 1 0 - A\nG R O U P OW N E R S H I P, C O N D O S ,\nC O O P E R AT I V E S , A N D\nOW N E R S H I P T R A N S F E R S\nLearning Objectives Key Terms\n• Describe different options for group or organizational Administrator/Administratrix Limited Liability Company\nownership. Blue Sky Laws (LLC)\n• Distinguish condominium ownership from cooperative Common Areas Limited Partnership\nand other alternative ownership options. Condominium Planned Unit Development\n(PUD)\n• Discuss common methods by which title can be Cooperative\ntransferred. Probate\nCorporation\nReal Estate Investment Trust\nExecutor/Executrix\n(REIT)\nGeneral Partnership\nTestate\nInheritance\nTestator\nIntestate\nTownhouse\nInvoluntary Alienation\nTrust\nVoluntary Alienation\n205\nArizona Real Estate Fundamentals\nGroup Ownership\nDepending on its form, group ownership often involves a legal D. Limited Liability Company (LLC). A business entity that\nentity separate from its individual members or owners. has combined characteristics of limited partnerships and\ncertain types of corporations.\nI. Real Estate Syndications 1. LLCs are created by filing articles of organization with\nthe Arizona Corporation Commission.\nThe term syndication describes a group of people who 2. Owners of an LLC are called members.\ncome together and pool their funds to make and operate an\n3. LLCs are managed by members or by a non-member\ninvestment. There are numerous ways in which they may be\nmanager.\norganized.\n4. LLCs are legal entities separate from the members. The\nA. General Partnership. In a general partnership, each members are not personally liable for the debts of the\npartner is considered to be a general partner, which means\nLLC.\nthey all have full liability for the debts of the partnership.\n5. LLCs take title in severalty and may be a tenant in\nThe liability of the partners is not limited as it is in a limited\ncommon with other persons or entities. An LLC\npartnership, a corporation, or a limited liability company.\ncannot take title in JTWRS.\nB. Limited Partnership. A limited partnership is composed of\n6. LLCs are commonly used to buy, sell, or hold real\ngeneral and limited partners.\nestate.\n1. The general partner or partners:\n7. LLCs may elect to be taxed as a sole proprietor,\na. Have full liability for debts\npartnership, S Corp, or C Corp\nb. Actively manage the partnership investments E. Trust. A trust is an arrangement under which legal title to\n2. The limited partners: real and/or personal property is transferred to and managed\na. Must be passive investors and take no active role in by a trustee, for the benefit of a beneficiary.\nthe management of the investment. 1. Living trusts are often formed by spouses or other\nb. Are not responsible for any losses the partnership family members for estate planning purposes. When\nmay have. Their liability is limited to the amount one beneficiary of a trust dies, that beneficiary’s portion\nof their original investment. of the trust assets is distributed according to the terms\nof the trust. Since the trust doesn’t die, there is no\nC. Corporation. A corporation is a business entity that is\nprobate of the trust assets.\nseparate and distinct from its owners and has many of the\nsame rights as a natural person. F. Real Estate Investment Trust (REIT). A REIT is a\ncompany with at least 100 investors (beneficiaries) that\n1. A corporation is owned by shareholders; their shares\nowns income-producing real estate and provides favored\n(stock) in the corporation are personal property.\ntax treatment to the investors.\n2. Corporations are formed at the Corporation\n1. A REIT must invest at least 75% of its assets in real\nCommission by filing articles of incorporation,\nestate and must pay out at least 90% of its taxable\n3. A board of directors manages a corporation. income to its shareholders.\n4. Corporations are legal entities separate from the 2. REIT shares are sold like stock or mutual funds on\nindividual s\n\n=== UNIT U11B ===\nArizona Real Estate Fundamentals\nUnit 10-A Quiz\n1. If a person owns a condominium, they own a(an): 8. A couple owns a condo in a community development.\nThe development has an exercise facility that is\nA. undivided interest in common areas and a\nfunded by dues that all the homeowners pay. The\nseparate interest in the unit\ncouple does not use the exercise facility. The couple\nB. undivided interest in the whole, separate interest\ncan:\nin the unit, and ownership of the land under the\nunit A. reduce their dues payment\nC. separate interest in the whole B. sell their rights to the exercise facility\nD. divided interest in common areas and undivided C. deduct the dues from their mortgage payment\ninterest in the unit D. do nothing; they have to pay their dues\n2. When co-op members sell their interest, they’re 9. In a co-op:\nselling their:\nA. each owner has a deed\nA. fee simple interest B. each owner holds stock\nB. life estate C. all owners are on one deed\nC. reversionary interest D. the owners are tenants in common\nD. leasehold interest\n10. Which of these must have at least 100 investors?\n3. The property of an owner who dies intestate and has\nA. Limited partnership\nheirs, will have their property:\nB. Limited liability company\nA. escheat to the state C. Trust\nB. transfer by descent to heirs D. Real estate investment trust\nC. devised by will\nD. sold at auction 11. Which state agency regulates the sale of real estate\nsecurities?\n4. An example of voluntary alienation is:\nA. Securities and Exchange Commission\nA. acquisition under eminent domain B. Arizona Department of Financial Institutions\nB. conveying title for valuable consideration C. Arizona Corporation Commission\nC. loss of property through avulsion D. Arizona Department of Real Estate\nD. escheat of a property after a person dies intestate\n12. Which is an example of involuntary alienation?\n5. An example of voluntary alienation is:\nA. Mortgage\nA. claiming title through adverse possession B. Deed of trust\nB. taking of property by eminent domain C. Deed through foreclosure\nC. foreclosure of a mortgage D. Deed in lieu of foreclosure\nD. an uncoerced transfer of ownership by deed\n13. When a person dies with a will, which of the following\n6. The process of validating a will, totaling the assets of statements would be FALSE?\nan estate, and transferring the property to the heirs\nA. An executor would oversee the probate process\nof the deceased is known as:\nB. An heir may contest the will\nA. probate C. The estate would not be subject to probate\nB. intestate because the party died with a will\nC. devise D. The estate could be subject to taxes before any\nD. bequest property is transferred\n7. An agent would need a securities license in order to 14. Where do condominium owners’ rights and\nsell: limitations come from regarding the property usage?\nA. cooperatives or condominiums A. State law\nB. apartment buildings B. Common law\nC. REITS C. Title insurance policy\nD. commercial property D. Declarations and bylaws\n210\nGroup Ownership, Condos, Cooperatives, and Ownership Transfers 10-A\n15. An owner’s interest in the condominium’s common 22. R dies intestate. In order to dispose of her estate:\nareas is best described as:\nA. her heirs must appoint an executor\nA. sole and separate B. her will must go through probate court to prove its\nB. an undivided interest validity\nC. joint tenancy C. the estate must first escheat to the county\nD. in severalty D. the estate must be probated\n16. A condominium and cooperative would be the same 23. Which is an example of involuntary alienation?\nin that:\nA. Condemning a strip of land to build a highway\nA. both own fee simple absolute interest B. Dedicating an acre of land to the county\nB. both own stock interest in the units C. Gifting a parcel of land to a family member\nC. both pay annual assessments D. Signing a warranty deed at closing\nD. both are leasehold estates\n24. Which type of business entity pays a share of the\n17. A co-op charges taxes based on: profits to its beneficiaries?\nA. square footage A. Corporation\nB. price of property sold B. Joint venture\nC. appraisal C. REIT\nD. pro-rata share D. Syndicate\n18. If a partnership does not pay its debts, the creditors 25. A condominium homeowners’ association purchased\nmay collect from the personal assets of: an insurance policy insuring the carpeting\nthroughout the buildings. Which area of the building\nA. limited partners\nwould the insurance be LEAST likely to cover?\nB. general partners\nC. stockholders of an incorporated company A. Individual units\nD. real estate investment trust B. Hallways\nC. Recreational facilities\n19. A man and his brother purchase a condominium D. Elevators\ntaking title as joint tenants. Their interest in the\ncommon areas would be held: 26. Which is a method of acquiring title?\nA. as community property A. Joint tenancy\nB. as joint tenants B. Community property\nC. as tenants in common C. Adverse possession\nD. in severalty D. Tenancy at will\n20. Each of these is an example of involuntary alienation 27. A property governed by a homeowners’ association\nEXCEPT: of 50 or more units has a patio cover that was built in\nviolation of the association declaration (CC&R’s). Prior\nA. a bank forecloses on a property for nonpayment of\nto closing, the association gave notice to the buyer\na loan\nregarding the violation. After the close of escrow,\nB. someone claims title to property through adverse\nwhich of the following statements is correct?\npossession\nC. a farmer dedicates property to the city for a park A. The patio cover may remain as is\nD. the state takes property through eminent domain B. If the association did not inspect the property\nto build a freeway prior to closing, the patio cover can remain\nC. The patio cover is in violation of the association’s\n21. J granted a deed to the local school district for 10 feet rules, and the buyer can be forced to remove it\nof land for a walkway easement beside his house to D. The buyer can hold the association liable for the\nthe elementa\n\n=== UNIT U12A ===\nArizona Real Estate Fundamentals\nI. Merchantable Title 4. Page of Exceptions (Schedule B). Provides a list of\nitems not covered by the policy and discloses existing\n(Marketable Title)\nencumbrances of record. The buyer is not insured\nagainst:\nA marketable title is one that is without clouds or defects. If a\na. Existing liens and encumbrances of record\nproperty has a clouded title, such as one with unpaid mechanic’s\n(including deed restrictions)\nliens or delinquent taxes, the seller would have to clear these\ndefects to make the title marketable. b. Mechanic’s liens not yet recorded\nc. Persons in possession\nII. Chain and d. Encroachments or errors a survey would reveal\nB. ALTA Title Policy (Mortgagee’s Policy). A title insurance\nAbstract of Title\npolicy that protects the lender against defects that could\nbe determined by an inspection of the public records\nA. Chain of Title. The chain of title is a complete history of\n(constructive notice) or an inspection of the property itself\nthe title to a property. It includes all transfers of ownership\n(actual notice).\nas well as all liens and encumbrances recorded since the\n1. The buyer usually purchases the ALTA policy for the\noriginal recorded source of the title.\nlender.\nB. Abstract of Title. An abstract is a summary of the chain of\n2. There is a one-time premium based on the loan amount.\ntitle.\n3. The ALTA policy contains the same protections as in an\nC. A chain of title or an abstract would reveal any gaps or\nowner’s policy plus protection for the lender against:\nclouds on title in the ownership record.\na. Mechanic’s liens not yet recorded,\n1. These gaps could be corrected through a legal quiet title\naction, a quit claim deed, or a correction deed. b. Persons in possession,\n2. Neither a chain of title nor an abstract insure the owner c. Encroachments or errors a survey would reveal.\nagainst title defects. 4. ALTA policies terminate when loans are paid off but\nremain in force if an existing loan is assumed.\nIII. Title Insurance C. ALTA Homeowner’s Policy (Extended Coverage Owner’s\nPolicy). An owner’s policy in which the coverage exceeds\nTitle insurance is an insurance policy that protects the the standard owner’s policy. These may not be available on\npolicyholder against losses due to defects in the title. all properties.\nA. Standard Owner’s Title Policy. Protects the buyer against D. No title insurance policy offers protection against:\ncertain title defects. 1. Existing encumbrances of record\n1. The seller usually purchases an owner’s title policy for 2. Defects known to the insured\nthe buyer.\n3. Changes in zoning\n2. There is a one-time premium based on the purchase\nE. Title Plant. A title plant is a set of indexed public records\nprice.\nmaintained by a title company.\n3. A Standard Owner’s Policy protects the buyer against\nF. Preliminary Title Report (Commitment for Title\ndefects that could be determined by an inspection of\nInsurance). The “prelim” is issued prior to closing of the\nthe public records (constructive notice). Schedule A of\nsale. It is given to the buyer to allow the buyer to review the\nthe policy lists the protections, which include:\nliens and encumbrances affecting the property. It states the\na. Forged documents requirements necessary to close the transaction according to\nb. Incompetent grantors having signed the deed the terms of the purchase agreement.\nc. Improperly drawn or delivered documents G. Subrogation. Subrogation is the substitution of a third\nperson in place of another in relation to a claim or debt.\nd. The possibility that only one spouse signed to\nIt is a common provision in insurance policies. Through a\nconvey community property\nsubrogation clause, the buyer transfers their rights to the\ne. Unknown or undiscovered heirs\ntitle insurance company to allow the company to sue the\nf. Misfiled documents seller or other parties after the insurance company pays a\nclaim to or on behalf of the buyer.\n224\nTitle Insurance and the Uniform Commercial Code 11-A\nIV. Uniform Commercial B. Security Agreement\n1. Formerly known as a chattel mortgage.\nCode (UCC)\n2. A security agreement places a lien on personal property.\nEstablished to standardize the laws relating to interstate 3. A financing statement (UCC-1) establishes the lien’s\ncommerce sales and other commercial transactions across the priority by filing the UCC-1 with the state’s Secretary\nUnited States. Most provisions have been adopted by all 50 of State.\nstates, Washington, D.C., and U.S. territories.\n4. When a business is sold, the title insurance company\nA. The UCC governs: performs a UCC-1 search through the Secretary of\n1. Commercial and business transactions State to determine outstanding UCC-1 liens on the\nbusiness’s furniture, fixtures, equipment, and inventory.\n2. The sale, financing, and leasing of personal property\nC. When solar equipment or water treatment systems are\nleased to property owners or businesses, the lessor often has\nthe owner sign a security agreement and files a UCC-1.\nChallenge Activity 11.1\n1. A title that is without cloud or defect is __________________________________________________________________.\n2. The complete history of a parcel of real estate is the _______________________________________________________.\n3. A summary of the chain of title is a(an) __________________________________________________________________.\n4. A court action to remove claims against the title is a _______________________________________________________.\n5. A standard owner’s title insurance policy protects the buyer against defects that could be determined by an\ninspection of the ________________________________________________________________________________.\n6. The page of a title insurance policy that lists the items that are not covered by the policy is the\n_______________________________________________________ _____________________________________________.\n7. The ALTA Title Policy protects the ____________________________________________________________________\n\n=== UNIT U13A ===\nU N I T 1 2 - A\nL A N D D E S C R I P T I O N S\nLearning Objectives Key Terms\n• Explain the necessity for obtaining and using a correct Acre\nlegal description. Article 10, Arizona Constitution\n• Identify and define the accepted legal description Check\nmethods.\nCorrection Township\n• Define the various land units and measurements. Metes and Bounds\n• Demonstrate by exercising an understanding of the Range\nlegal description process. Recorded Plat (Lot & Block)\nRectangular Survey/Government Survey/Public Land Survey\nSystem (PLSS)\nSection\nState Trust Land\nSurvey\nTier\nTownship\n243\nArizona Real Estate Fundamentals\nLand in Arizona Metes and Bounds Description\nOwnership: A method of describing property boundaries (bounds) using\ndistances (metes/measurements) and compass directions from\n• Federal Government – 42.2%\npoint to point.\n• Native American Tribes – 27.6%\nA. Requirements:\n• Private – 17.5%\n1. Point of beginning\n• State Trust Land – 12.7% 2. Distances between points\n3. Directions between points\n4. Closure. The description must begin and end at the\nsame point.\nState Trust Land\n• Article 10 of the Arizona Constitution created state trust\nland.\n• Transferred from the federal government to Arizona in\n1910.\n• Held in trust and managed by Arizona State Land\nDepartment to be sold or leased.\n• Proceeds from the sale or lease of state trust land benefit\nschools and other entities.\nLegal Description Systems\nThere are three accepted methods of legally describing parcels of\nreal estate in Arizona.\n• Metes and bounds is the oldest system in use and uses\ndistances and directions to describe property boundaries.\n• The lot and block method is used in subdivisions. This\nmethod is usually used to describe the smallest parcels of\nland.\n• The rectangular survey system is used mostly in the\nMidwest and West, including Arizona. This method is used\nto describe the largest parcels of land.\n244\nLand Descriptions 12-A\nRecorded Plat or Lot & Block Rectangular Survey\nDescription\nSystem (Government\nA subdivision map (plat) shows the location and boundaries of Survey System)\nindividual parcels. It is recorded with the County Recorder’s\nOffice. A survey is a formal process of locating and measuring the\nA. Most common in populated areas and required when boundaries of a property and identifying the improvements,\nproperty is subdivided by a developer. encroachments, and easements that are associated with that land.\nThe rectangular survey system, also called the government survey\nB. The area is mapped using a metes and bounds description,\nmethod or the Public Land Survey System (PLSS), is a legal\nthe lots are numbered, and the plat identifies parcels by lot\ndescription for land referencing intersecting principal meridians\nand/or lot and block number.\nand baselines designated throughout the country. Baselines and\nmeridians are based on longitude and latitude, which are imaginary\nlines that divide the earth through the north and south poles\n(longitude) and that run parallel to the equator (latitude).\nIn Arizona, the initial point for all land surveys in the state is an\nintersection referred to as the Gila and Salt River Baseline and\nMeridian (G&SRB&M). It is located about 15 miles southwest\nof downtown Phoenix near Phoenix International Raceway.\nArizona does have a second principal meridian and baseline in\nnorthern Arizona that is not currently used.\nChallenge Activity 12.1\n1. The method of describing property using distances\nand directions is known as\n___________________________________________.\n2. The four requirements for a valid metes and\nArizona baseline and principal meridian; initial point for a\nbounds description are:\nrectangular survey (note: six-mile range and township lines not to\n____________________________________________ scale).\n____________________________________________\n____________________________________________\n____________________________________________\n3. A method of describing property that is based on\na survey map that has been entered into the public\nrecords is known as ___________________________\n________________________________________.\n245\nArizona Real Estate Fundamentals\nTownships Challenge Activity 12.2\nA specific parcel of land is identifiable by directions and In the diagram below, the bold lines represent the baseline\ncoordinates, counted from the baseline and principal meridian and meridian. Each square represents a township. Provide\nas reference points. Additional north-south lines, called range the description of each numbered township.\nlines, run parallel to the principal meridian at six-mile intervals.\nAdditional east-west lines, called township lines, run parallel to\nthe baseline at six-mile intervals. This divides the state into six-\nmile by six-mile squares called townships.\nRange lines run north and south, are parallel to the principal\nmeridian, and are six miles apart. The range lines create north/\nsouth strips of land called ranges. These six-mile-wide strips are\nnumbered and designated as being east or west of the principal\nmeridian.\nTownship lines run east and west, are parallel to the baseline,\nand are six miles apart. The township lines create east/west strips\nof land called tiers. These six-mile-wide strips of townships\nare numbered and designated as being north or south of the\nbaseline.\nIntersecting township lines and range lines form square parcels\ncalled townships.\nEach township is six miles square (squares that are six miles\non a side) and contains an area of 36 square miles (6 miles x 6 1. _______________________________________\nmiles). The perimeter of each township is 24 miles (6 miles + 6\n2. _______________________________________\nmiles + 6 miles + 6 miles).\n3. _______________________________________\n4. _______________________________________\n5. _______________________________________\n6. _______________________________________\n7. _______________________________________\n8. _______________________________________\nTownship Identification: Each township is identified by it\n\n=== UNIT U13B ===\nLand Descriptions 12-A\nChallenge Activity 12.3\n1. The method of describing property that uses baselines and meridians is known as the\n_______________________________________________________________________________________.\n2. The rectangular survey system is based on two sets of intersecting lines. The line that runs north and south is the\n______________________________. The line that runs east and west is the ___________________________.\n3. In Arizona, these intersecting lines are referred to as the ____________________________________________________\n__________________________________________________.\n4. Land on either side of the principal meridian that is divided into strips by lines that run north and south and are\ncalled ____________________________________________.\n5. The distance between range lines is _____________________________________________________________________.\n6. Land on either side of the baseline is divided into strips by lines that run east and west and are called\n___________________________________________.\n7. The distance between township lines is __________________________________________________________________.\n8. The intersection of range lines and township lines creates squares which are called _____________________________.\n9. Each township is ______ miles square and has an area of ___________________________________________________.\n10. The perimeter of a township is__________________________________________________________________________.\n11. Ranges are numbered by their distance and direction from the ______________________________________________.\n12. Townships are numbered by their distance and direction from the ___________________________________________.\nSections Government Check\nThe 36 square miles of a township are divided into 36 sections. Because of the earth’s curvature and the historically imprecise\nA section is one-mile square and contains one square mile, nature of surveying, few townships contain exactly 36 square\nwhich is also measured as 640 acres. Each section in a township miles. Since all north-south lines eventually converge at the\nis numbered sequentially 1 to 36, starting in the northeast north and south poles, range lines are adjusted every fourth\ncorner and moving alternately right to left then left to right, township (every 24 miles) to maintain townships as close\nending in the southeast corner. to six miles square as possible. These adjustments are made\nalong correction lines, or check lines, and create a square,\ncalled a government check or quadrangle, which contains 16\ntownships.\nCorrection Lines in a Government Check\n247\nArizona Real Estate Fundamentals\nFractional Sections\nThe correction in a government check is absorbed by certain\ntownships, called correction townships. The sections that are\ncorrected (fractional sections) lie along the north and west sides\nof a correction township. Correction townships contain 25\nstandard sections (640 acres) and 11 nonstandard or irregular\n(fractional) sections.\nCorrection Township:\n25 Standard Sections and 11 Fractional Sections\nChallenge Activity 12.4\n1. Townships are broken down into ____________ sections\n2. A section is ____________ mile square and contains an area of ____________ square mile.\n3. A section contains _____________ acres.\n4. A government check is _____________ miles square.\n5. A government check contains ______________ townships.\nDividing Sections\nSections are divided into halves and quarters. Each half section A quarter section can be divided into halves (80 acres) or\n(320 acres) may be identified by its compass direction: E, W, quarter-quarters of 40 acres. Quarter-quarters—or “40s,” as\nN, S, and quarter sections (160 acres) are identified by their they are often called—can be further divided (by quartering)\ncompass direction: NE, SE, SW, NW. into areas as small as 5 acres, 2-1/2 acres, or 1-1/4 acres.\nOne acre = 43,560 square feet\nQuartering Sections\n248\nLand Descriptions 12-A\nIdentifying Parcels\nUnder the rectangular survey system, it is very easy to describe When adding the section identifier to the township identifier,\nand locate any one parcel of land, since there cannot be another an example of a full legal description may read: “N 1/2 of NE\nparcel of land with the same identification. Each parcel is 1/4 of Section 16, T1N, R3E of the Gila and Salt River Baseline\nidentified according to its location within the section. For and Meridian, Maricopa County, Arizona.”\nexample, a parcel may be identified as: N 1/2 of NE 1/4 of\ni\nSection 16.\nAlternatively, 1/2” may be written as “2” and “1/4” may\nTo find that N 1/2 of NE 1/4 of Section 16 parcel within the be expressed as “4”. For example N ½ may appear as\nsection, always start from the end of the description, and work N2 and E1/4 may appear as E4.\nbackward from right to left. To find the NE 1/4, look at the\nupper right corner, or northeast quarter, of the section first.\nThen, look for the north half of that.\nN 1/2 of NE 1/4 of Section 16\nLand Description Math: Calculating Acreage\nLinear Measurement Area Square Measure\n1 mile = 5,280 feet = 1,760 yards 1 acre = 43,560 square feet\n½ mile = 2,640 feet 1 square mile = 640 acres\n¼ mile = 1,320 feet 1 section = 640 acres\n1 section = 1 mile square 1 section = 1 square mile\n1 township = 6 miles square 1 township = 36 square miles\n1 check = 24 miles square 1 check = 16 townships\ni\nOne mile square is a parcel square in shape, one mile\non each side.\nGiven a rectangular survey description, it is quite easy to If the description is:\ndetermine the number of acres described. To calculate the\nN 1/2 of the NE 1/4 of the SW 1/4 of\nacreage for a given parcel of land, start with the known factor:\nThere are 640 acres in a section. Section 14, T2N, R3W\nTake 640 and divide by the denominators (bottom numbers)\nfor each fractional part working backward from right to left.\nThe calculation is:\n(Sect. 14) 640 acres ÷ 4 (SW 1/4) = 160 acres ÷ 4 (NE 1/4)\n= 40 acres ÷ 2 (N 1/2) = 20 acres\n249\nArizon\n\n=== UNIT U14B ===\nArizona Real Estate Fundamentals\nC. When a property management agreement is terminated, the VI. Illegal Property\nfirm must give the owner an accounting as follows:\nManagement Situations\nWithin…\nA. Real estate salespersons or associate brokers acting as\n5 days A list of all security deposits\nproperty managers on their own outside of the brokerage\n35 days Reimbursement of all monies in the property company are acting illegally. Property management by a\nmanagement account salesperson or associate broker must be handled through\n75 days A final accounts receivable and payable list the brokerage firm.\nB. Unlicensed persons providing property management\n75 days A final bank account reconciliation\nservices are acting illegally if they manage more than one\nproperty.\nV. Payment of Finder Fees\nto Unlicensed Tenants\nIn Arizona, a finder fee may be paid to an unlicensed person\nwho is a tenant in an apartment complex. The fee must be either\na rent credit or rent reduction and may not be paid in cash.\nChallenge Activity 13.1\n1. As a property manager, the broker is considered to be a ___________________________ agent.\n2. A property manager is concerned with obtaining the highest ___________________ for the owner.\n3. A property management agreement must contain a(an) _________________________________ date and\n___________________________________ date.\n4. A property management agreement must specify the _____________ and frequency of status reports.\n5. A property management agreement must state the amount and purpose of monies the manager holds as a(an)\n_________________________________________ for emergencies and other purposes.\n6. A broker ___________________ deposit money directly into an owner’s account.\n(MAY or MAY NOT)\n7. A broker ___________________ have access to withdraw funds from an owner’s account.\n(MAY or MAY NOT)\n8. Monies must be deposited in a trust account __________________________________________________ after receipt.\n9. A property management agreement must provide for the disposition and allocation of ___________________ earned\non trust accounts.\n10. If rent received on broker-owned properties is deposited in the company property management account, it would be\n_________________________.\n11. Residential rental agreement records must be kept for _________________________.\n12. Commercial leases must be kept for _________________________ after termination.\n13. Residential finder fee records and property management financial records must be kept for ______________________.\n14. Unlicensed tenants in a residential complex may be paid a __________________________ that may be only a\n_________________________________________________.\n15. The three persons who may sign on a property management trust account are the\n_______________________________________________________________________________________.\n16. The person who may not sign on a trust account is the _____________________________________.\n17. When a property management agreement is terminated, the firm must give the owner an accounting as follows:\n________ days for a list of all security deposits\n________ days for reimbursement of all monies in property management account\n________ days for a final accounts receivable and payable list and final bank reconciliation\n264\nThe Property Management Profession 13-A\nUnit 13-A Quiz\n1. A property management agreement is a contract 8. Arizona law requires that property management\nbetween the: agreements contain all of the following provisions\nEXCEPT:\nA. salesperson and broker\nB. salesperson and property owner A. disposition of all monies collected by licensees\nC. banker and property owner B. extent of the licensees’ authority to order repairs or\nD. broker and property owner improvements\nC. written registration of prospective tenants\n2. Which of the following items is NOT the responsibility D. frequency of status reports to the client\nof a property manager?\n9. Which of the following would a property manager\nA. Management\nNOT be responsible to report to the property owner?\nB. Marketing\nC. Financial reports A. Reports on rental funds\nD. Legal counsel B. Rents of comparable property in the area\nC. Info on preventative maintenance\n3. The main objective of a property manager should be D. The market value of the owner’s property\nto provide the owner with:\n10. A property management agreement must contain all\nA. the highest net return on the amount of capital\nof the following items EXCEPT:\ninvested\nB. the highest gross return on the property value A. description of the property\nC. complete monthly reports of the building and B. termination date\ntenants C. names of the parties\nD. increased income based upon the adjustment of D. age of the property\nrent schedule to current or changed conditions\n11. An apartment complex has 10 units; 6 units rent for\n4. When a broker enters into a contract to manage an $650 per month, and 4 units rent for $475 per month.\napartment building, the broker becomes a: Over the year, there is a 10% vacancy rate, and the\nproperty manager receives an additional $175 for\nA. fiduciary\nevery new unit rented. If four new units were rented\nB. trustee\nand the manager receives a 5% commission on rents\nC. receiver\ncollected, what is the manager owed?\nD. director\nA. $961\n5. The property manager works for the: B. $3,832\nC. $4,180\nA. broker\nD. $7,660\nB. property owner\nC. tenant\n12. Which would be considered illegal property\nD. lender\nmanagement activity?\n6. A property manager’s duties include all of the A. A firm specializing in commercial sales offers\nfollowing items EXCEPT: residential property management services\nB. A licensed salesperson enters into property\nA. collecting the rent\nmanagement agreements on behalf of her broker\nB. accepting personal liability for losses\nC. A licensed associate broker manages property\nC. preparing financial reports for the owner\ndirectly for an investor\nD. marketing the property\nD. An unlicensed manager of a 250-unit apartment\nbuilding receives a salary plus an a\n\n=== UNIT U15A ===\nArizona Real Estate Fundamentals\n24. If a residential tenant discovers bedbugs in their unit,\nthey are required to notify the landlord:\nA. in writing or by electronic means\nB. verbally\nC. with 30 days’ notice\nD. that the lease will be terminated\n25. If a residential tenant terminates the lease in the\nmiddle of the month and is charged a termination\nfee:\nA. the remainder of the month’s rent offsets the\ntermination fee\nB. the tenant gets no credit for the remainder of the\nmonth’s rent\nC. the termination fee is illegal\nD. the entire security deposit is forfeited\n26. A lease on a commercial property terminates. The\ntenant had paid a security deposit of $2,000, has\ndone $3,500 in damage to the building, and leaves\nfurniture and trade fixtures with a total value of\n$1,200. If the tenant returns and demands the\nfurniture and fixtures be returned, what must the\nlandlord do?\nA. Return the security deposit, furniture, and trade\nfixtures\nB. Return the furniture and trade fixtures\nC. Return only the furniture, but not the trade fixtures\nD. Return nothing\n27. A property manager wants to show rental property\nto a prospective buyer, but the tenant doesn’t know\nthat the property is for sale and refuses entry to the\nproperty manager. The property manager must:\nA. show the property according to the prospective\nbuyer’s schedule\nB. provide the tenant with reasonable notice of entry\nC. not show the property\nD. evict the tenants to make the property available to\nshow to prospective buyers\n274\n1144\nSession 14\nFinance\nInstruments and\nForeclosure\nU n i t 1 4 - A : Fi n a n c i n g D o c u m e n t s\nThe term instrument refers to a written legal document that establishes the different rights\nand duties of the parties involved. There are two types of real estate finance documents or\ninstruments: A promissory note and an accompanying security instrument, such as a deed of\ntrust, mortgage, or agreement for sale. In this unit, we’ll look at each of these.\nU n i t 1 4 - B : Fo re c l o s u re\nBorrowers who fail to repay the debt according to the terms of the agreement are considered\nin default. In a foreclosure, the property used as security for a debt is sold so the unpaid\ndebt, secured by the lien, can be satisfied from the sale proceeds. In Arizona, the deed of trust\nis most often foreclosed through a non-judicial foreclosure, but a judicial foreclosure is also\navailable to the lender. In Arizona, mortgages (which are rarely used) may only be foreclosed\njudicially. We’ll look at both foreclosure proceedings in this unit. We’ll also review some of\nthe considerations for distressed property transactions, including options that may allow a\nhomeowner to avoid foreclosure. Finally, we’ll discuss requirements imposed by the State of\nArizona on someone who purchases a home with the intention of making improvements and\nthen reselling it.\n275\nU N I T 1 4 - A\nF I N A N C I N G D O C U M E N T S\nLearning Objectives Key Terms\n• Differentiate between a promissory note and a security Agreement for Sale Lien Theory\ninstrument. Beneficiary Lis Pendens\n• Explain the concept of hypothecation. Contract for the Sale of Real Mortgage\n• Describe the difference between lien theory and title Estate Promissory Note\ntheory. Deed of Reconveyance Satisfaction of Mortgage\n• Contrast the use of a deed of trust and a mortgage as a Default Title Theory\nsecurity instrument. Defeasance Deed of Trust\n• Explain the use of an agreement for sale, also called a Equitable Title Trustee\nland contract. Hypothecation Trustor\nLand Contract Vendee\nLegal Title Vendor\n277\nArizona Real Estate Fundamentals\nI. Voluntary Liens IV. Deed of Trust\n(Trust Deed)\nA voluntary lien is a lien placed on a property with the owner’s\nconsent. The three types of voluntary liens in Arizona are deed\nA Deed of Trust is the document used by Arizona lenders to\nof trusts, mortgages, and agreements for sale. All three are used\nplace a lien on real property. Prior to 1971, Arizona lenders\nas security for the debt and each has different procedures for\ncould only use a mortgage as security for a loan, and the only\nforeclosure.\nway to foreclose a mortgage is through a court action (judicial\nHypothecation is a pledge of real property as security without foreclosure). In 1971, Arizona law changed so lenders could\ngiving possession of the property to the lender. secure loans with a deed of trust, which allows either a non-\njudicial foreclosure or a judicial foreclosure. (Foreclosure\nprocedures are covered in the next unit.)\nA. Deed of Trust Documents\n1. Promissory Note. The promise to repay the debt. It\nserves as evidence of the debt.\n2. Deed of Trust. Secures the note with the property as\ncollateral.\nB. Pa';
+
+var TOPICS = [
+  {id:"VI",  name:"Licensee Competencies",        full:"Licensee Competencies and Duties",          score:33,  units:"U1A,U2A,U6A,U12A,U13A,U13B,U18A", icon:"⚖️",  ic:"sc-crit"},
+  {id:"IX",  name:"Critical Business Services",   full:"Critical Business Services",                score:40,  units:"U11A,U11B,U14B,U16B",              icon:"🏢",  ic:"sc-crit"},
+  {id:"X",   name:"Ownership and Encumbrances",   full:"Ownership and Encumbrances",                score:40,  units:"U9B,U10B,U15A,U15B",               icon:"🏠",  ic:"sc-crit"},
+  {id:"IV",  name:"Arizona Agency",               full:"Arizona Agency Law",                        score:50,  units:"U2B,U3A,U3B",                       icon:"🤝",  ic:"sc-low"},
+  {id:"I",   name:"AZ Regulatory Framework",      full:"AZ Real Estate Regulatory Framework",       score:60,  units:"U16A,U16B,U17A,U17B",              icon:"📜",  ic:"sc-mid"},
+  {id:"II",  name:"Consumer Protection",          full:"Arizona Consumer Protection Laws",           score:60,  units:"U2B,U3A,U6A,U6B,U14B,U15B",       icon:"🛡️",  ic:"sc-mid"},
+  {id:"VII", name:"Reasonable Skill and Care",    full:"Reasonable Skill and Care",                 score:67,  units:"U8A,U12B,U15A",                    icon:"🎓",  ic:"sc-mid"},
+  {id:"VIII",name:"Contracts",                    full:"Contracts",                                  score:75,  units:"U2B,U4A,U10B,U16B,U17A,U17B",     icon:"📋",  ic:"sc-pass"},
+  {id:"III", name:"Advertising",                  full:"Advertising",                               score:100, units:"U17A",                              icon:"📢",  ic:"sc-pass"},
+  {id:"V",   name:"Licensee Duties",              full:"Licensee Duties and Obligations",            score:100, units:"U3A,U16A,U17A,U17B",               icon:"✅",  ic:"sc-pass"},
+  {id:"XI",  name:"Foreclosure",                  full:"Foreclosure, Short Sale, Deed-in-Lieu",     score:100, units:"U14A,U14B",                         icon:"🏚️",  ic:"sc-pass"}
+];
+
+var correct=0, total=0, streak=0, diff="medium", qtype="mc", topicId="VI", started=false;
+var waiting=false, askedLog=[], angleIdx=0;
+
+var ANGLES=[
+  "Ask about a definition or the specific meaning of a term.",
+  "Ask about a rule, requirement, or legal obligation and what happens if violated.",
+  "Phrase this as a NOT or EXCEPT question.",
+  "Ask about a real-world scenario where an agent must decide what to do.",
+  "Ask about a timeline, deadline, or specific number (days, percentages, amounts).",
+  "Ask about the difference between two similar-sounding concepts students commonly confuse.",
+  "Ask about who has authority or responsibility in a given situation.",
+  "Ask about consequences of a licensee failing to follow the rules."
+];
+
+function T(id){ for(var i=0;i<TOPICS.length;i++){if(TOPICS[i].id===id)return TOPICS[i];} return TOPICS[0]; }
+
+// INIT
+window.onload = function(){
+  buildHomeList();
+  buildSelect();
+  buildGrid("sgGrid", loadSG);
+  buildGrid("vocabGrid", loadVocab);
+};
+
+// NAV
+function nav(page){
+  var panels = document.querySelectorAll(".panel");
+  for(var i=0;i<panels.length;i++) panels[i].classList.remove("on");
+  var tabs = document.querySelectorAll(".ntab");
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove("on");
+  document.getElementById("panel-"+page).classList.add("on");
+  document.getElementById("nt-"+page).classList.add("on");
+}
+
+// HOME - show ALL topics with scores
+function buildHomeList(){
+  var list = document.getElementById("homeTopicList");
+  list.innerHTML = "";
+  for(var i=0;i<TOPICS.length;i++){
+    var t = TOPICS[i];
+    var label = t.score < 75 ? "Study it" : "Passing";
+    var row = document.createElement("div");
+    row.className = "topic-row";
+    row.setAttribute("data-id", t.id);
+    row.innerHTML = "<div class=\"tr-icon\">"+t.icon+"</div>"
+      +"<div style=\"flex:1\"><div class=\"tr-name\">"+t.full+"</div><div class=\"tr-units\">"+t.units+"</div></div>"
+      +"<span class=\"tr-score "+t.ic+"\">"+t.score+"%</span>"
+      +"<span class=\"tr-cta\">"+label+" &rarr;</span>";
+    row.onclick = (function(id){ return function(){ jumpQuiz(id); }; })(t.id);
+    list.appendChild(row);
+  }
+}
+
+function jumpQuiz(id){
+  topicId = id;
+  document.getElementById("topicSel").value = id;
+  nav("quiz");
+  showEmpty();
+}
+
+// QUIZ SELECT
+function buildSelect(){
+  var sel = document.getElementById("topicSel");
+  for(var i=0;i<TOPICS.length;i++){
+    var t = TOPICS[i];
+    var opt = document.createElement("option");
+    opt.value = t.id;
+    opt.textContent = t.name+" ("+t.score+"%)";
+    sel.appendChild(opt);
+  }
+  sel.value = topicId;
+}
+
+function onTopicChange(){
+  topicId = document.getElementById("topicSel").value;
+  askedLog = []; angleIdx = 0;
+  resetQuiz();
+}
+
+// QUESTION TYPE
+function setQT(type){
+  qtype = type;
+  var types = ["mc","tf","vocab","scenario","math"];
+  for(var i=0;i<types.length;i++){
+    var el = document.getElementById("qt-"+types[i]);
+    if(types[i]===type) el.classList.add("on"); else el.classList.remove("on");
+  }
+}
+
+// API
+function claude(msgs, sys, cb){
+  var body = JSON.stringify({model:"claude-sonnet-4-6", max_tokens:1000, system:sys, messages:msgs});
+  fetch("https://api.anthropic.com/v1/messages", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:body
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.error) cb(null, d.error.message);
+    else cb(d.content[0].text, null);
+  }).catch(function(e){ cb(null, e.message); });
+}
+
+function getSys(){
+  var t = T(topicId);
+  var logSec = "";
+  if(askedLog.length > 0){
+    logSec = "
+ALREADY ASKED - do NOT repeat these:
+";
+    for(var i=0;i<askedLog.length;i++) logSec += (i+1)+". "+askedLog[i]+"
+";
+  }
+  var diffDesc = diff==="easy" ? "basic definitions and clear facts" : diff==="medium" ? "rule application and exceptions" : "nuanced scenarios and edge cases";
+  var expRule = "EXPLANATION must: (1) Start with "The correct answer is [LETTER]) [restate the option] because..." with a clear reason from Arizona law or the ASREB textbook. (2) Explain why each wrong answer is incorrect. (3) End with the key rule to remember for the exam.";
+  var fmt = {
+    mc:"QTYPE: MULTIPLE_CHOICE
+TOPIC: [subtopic]
+QUESTION: [question]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+CORRECT: [A/B/C/D]
+EXPLANATION: ["+expRule+"]",
+    tf:"QTYPE: TRUE_FALSE
+TOPIC: [subtopic]
+QUESTION: [statement]
+CORRECT: [TRUE/FALSE]
+EXPLANATION: [Start with This is TRUE/FALSE because... then explain the Arizona rule clearly. End with the key exam takeaway.]",
+    vocab:"QTYPE: VOCABULARY
+TOPIC: [subtopic]
+QUESTION: [Define: term OR Which term means: description?]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+CORRECT: [A/B/C/D]
+EXPLANATION: ["+expRule+" Define the correct term and explain why each wrong term does not fit.]",
+    scenario:"QTYPE: SCENARIO
+TOPIC: [subtopic]
+QUESTION: [2-3 sentence real scenario then the question]
+A) [option]
+B) [option]
+C) [option]
+D) [option]
+CORRECT: [A/B/C/D]
+EXPLANATION: ["+expRule+" Cite the specific Arizona law or ASREB rule.]",
+    math:"QTYPE: MATH
+TOPIC: [subtopic]
+QUESTION: [scenario with numbers]
+A) [answer]
+B) [answer]
+C) [answer]
+D) [answer]
+CORRECT: [A/B/C/D]
+EXPLANATION: [Step-by-step calculation to the correct answer, then note what mistake leads to each wrong answer.]"
+  };
+  return "You are an expert Arizona real estate licensing exam tutor for ASREB. Tutoring Wyatt Cooper who scored 65% on RE 100 and needs 75% to pass the Pearson State Exam.
+
+TOPIC: "+t.full+" (units: "+t.units+") - Wyatt scored "+t.score+"% here.
+DIFFICULTY: "+diff+" ("+diffDesc+")
+"+logSec+"
+TEXTBOOK (Arizona Real Estate Fundamentals, ASREB 3rd Ed.):
+"+TB.slice(0,42000)+"
+
+FORMAT:
+"+(fmt[qtype]||fmt.mc)+"
+
+RULES:
+1. Base all questions on the textbook above using ASREB Arizona terminology.
+2. Pearson State Exam realistic style.
+3. Never repeat any topic from the already-asked list.
+4. Vary the correct answer position (A, B, C, D) - do not put it in the same slot repeatedly.
+5. For NOT/EXCEPT questions write NOT or EXCEPT in ALL CAPS.
+6. Vary question framing - not always Which of the following.";
+}
+
+// PARSE + SHUFFLE
+function parseQ(text){
+  var lines = text.split("
+");
+  var q = {type:"", topic:"", question:"", opts:[], correct:"", explanation:""};
+  var expLines = []; var inExp = false;
+  for(var i=0;i<lines.length;i++){
+    var l = lines[i].trim();
+    if(l.indexOf("QTYPE:")===0) q.type = l.slice(6).trim();
+    else if(l.indexOf("TOPIC:")===0) q.topic = l.slice(6).trim();
+    else if(l.indexOf("QUESTION:")===0) q.question = l.slice(9).trim();
+    else if(/^[ABCD]\)/.test(l)) q.opts.push(l);
+    else if(l.indexOf("CORRECT:")===0){ q.correct = l.slice(8).trim().toUpperCase(); inExp=false; }
+    else if(l.indexOf("EXPLANATION:")===0){ inExp=true; expLines.push(l.slice(12).trim()); }
+    else if(inExp && l) expLines.push(l);
+  }
+  q.explanation = expLines.join(" ");
+  if(q.type==="TRUE_FALSE"){
+    q.opts = ["A) True","B) False"];
+    if(q.correct==="TRUE") q.correct="A";
+    else if(q.correct==="FALSE") q.correct="B";
+    return q;
+  }
+  // Shuffle options
+  if(q.opts.length===4 && q.correct){
+    var ci = "ABCD".indexOf(q.correct);
+    if(ci>=0){
+      var texts = [];
+      for(var i=0;i<q.opts.length;i++) texts.push(q.opts[i].slice(3));
+      var correctText = texts[ci];
+      for(var i=texts.length-1;i>0;i--){
+        var j=Math.floor(Math.random()*(i+1));
+        var tmp=texts[i]; texts[i]=texts[j]; texts[j]=tmp;
+      }
+      q.opts = [];
+      for(var i=0;i<texts.length;i++) q.opts.push("ABCD"[i]+") "+texts[i]);
+      var newCi = texts.indexOf(correctText);
+      q.correct = "ABCD"[newCi];
+    }
+  }
+  return q;
+}
+
+// RENDER
+function showEmpty(){
+  var feed = document.getElementById("qfeed");
+  feed.innerHTML = "";
+  var t = T(topicId);
+  var scoreColor = t.score<=40 ? "var(--red)" : t.score<=60 ? "var(--orange)" : "var(--gold)";
+  var div = document.createElement("div");
+  div.className = "q-empty"; div.id = "qempty";
+  div.innerHTML = "<div class='q-empty-icon'>"+t.icon+"</div>"
+    +"<h2>"+t.full+"</h2>"
+    +"<p>You scored <strong style='color:"+scoreColor+"'>"+t.score+"% on your last exam</strong> in this section.</p>"
+    +"<button class='start-btn' onclick='startQuiz()'>Get First Question</button>";
+  feed.appendChild(div);
+  started = false;
+  correct=0; total=0; streak=0; diff="medium";
+  updateStats();
+}
+
+function renderQ(q){
+  var feed = document.getElementById("qfeed");
+  var em = document.getElementById("qempty");
+  if(em) em.parentNode.removeChild(em);
+
+  var tags = {MULTIPLE_CHOICE:"qb-mc MC", TRUE_FALSE:"qb-tf T/F", VOCABULARY:"qb-vo VOCAB", SCENARIO:"qb-sc SCENARIO", MATH:"qb-ma MATH"};
+  var tagParts = (tags[q.type]||"qb-mc MC").split(" ");
+  var tagCls = tagParts[0]; var tagLbl = tagParts[1];
+
+  var card = document.createElement("div");
+  card.className = "q-card";
+  var inner = "<span class='q-badge "+tagCls+"'>"+tagLbl+"</span>";
+  if(q.topic) inner += "<div class='q-sub'>"+q.topic+"</div>";
+  inner += "<div class='q-text'>"+q.question+"</div><div class='opts' id='opts"+Date.now()+"'></div>";
+  card.innerHTML = inner;
+  feed.appendChild(card);
+
+  var grid = card.querySelector(".opts");
+  for(var i=0;i<q.opts.length;i++){
+    (function(opt, idx, theQ){
+      var btn = document.createElement("button");
+      btn.className = "opt";
+      btn.setAttribute("data-letter","ABCD"[idx]);
+      btn.innerHTML = "<span class='opt-l'>"+"ABCD"[idx]+"</span><span>"+opt.slice(3)+"</span>";
+      btn.onclick = function(){ handleAnswer(btn, theQ, grid); };
+      grid.appendChild(btn);
+    })(q.opts[i], i, q);
+  }
+  waiting = true;
+  scrollFeed();
+}
+
+function handleAnswer(btn, q, grid){
+  if(!waiting) return;
+  waiting = false;
+  var ok = btn.getAttribute("data-letter") === q.correct;
+  total++; if(ok){correct++;streak++;}else{streak=0;}
+  if(streak>=3) diff="hard";
+  else if(!ok && total>2) diff="easy";
+  else diff="medium";
+  updateStats();
+
+  var btns = grid.querySelectorAll(".opt");
+  for(var i=0;i<btns.length;i++){
+    btns[i].disabled = true;
+    var letter = "ABCD"[i];
+    if(letter===q.correct){
+      if(btns[i]===btn && ok) btns[i].classList.add("c");
+      else btns[i].classList.add("rv");
+    }
+    if(btns[i]===btn && !ok) btns[i].classList.add("w");
+  }
+
+  var correctOptText = "";
+  for(var i=0;i<q.opts.length;i++){
+    if(q.opts[i].charAt(0)===q.correct){ correctOptText = q.opts[i]; break; }
+  }
+
+  var fb = document.createElement("div");
+  fb.className = "fb " + (ok ? "ok" : "no");
+  var fbHtml = "<div class='fb-head'>"+(ok ? "Correct!" : "Wrong")+"</div>";
+  if(!ok && correctOptText){
+    fbHtml += "<div class='fb-ans'>The correct answer was: <strong>"+correctOptText+"</strong></div>";
+  }
+  fbHtml += "<div class='fb-body'>"+q.explanation+"</div>";
+  fbHtml += "<div class='fb-meta'><span>"+correct+"/"+total+" ("+(total>0?Math.round(correct/total*100):0)+"%)</span><span>Difficulty: "+diff+"</span><span>Streak: "+streak+"</span></div>";
+  fb.innerHTML = fbHtml;
+  document.getElementById("qfeed").appendChild(fb);
+  scrollFeed();
+  setTimeout(nextQ, 1500);
+}
+
+function startQuiz(){
+  started = true;
+  var em = document.getElementById("qempty");
+  if(em) em.parentNode.removeChild(em);
+  nextQ();
+}
+
+function nextQ(){
+  document.getElementById("qiBtn").disabled = true;
+  var feed = document.getElementById("qfeed");
+  var th = document.createElement("div");
+  th.className = "thinking"; th.id = "thinking";
+  th.innerHTML = "<div class='dots'><div class='dot'></div><div class='dot'></div><div class='dot'></div></div><span>Generating question...</span>";
+  feed.appendChild(th);
+  scrollFeed();
+
+  var angle = ANGLES[angleIdx % ANGLES.length]; angleIdx++;
+  var t = T(topicId);
+  var prompt = "Generate one "+qtype.toUpperCase()+" question about: "+t.full+"\nUnits: "+t.units+"\nDifficulty: "+diff+"\nAngle: "+angle+"\nQuestions asked so far: "+total+"\nGenerate a fresh unique question now.";
+
+  claude([{role:"user",content:prompt}], getSys(), function(res, err){
+    var thEl = document.getElementById("thinking");
+    if(thEl) thEl.parentNode.removeChild(thEl);
+    if(err){ showErr(err); document.getElementById("qiBtn").disabled=false; return; }
+    var q = parseQ(res);
+    if(q.question && (q.opts.length>0 || q.type==="TRUE_FALSE")){
+      var summary = (q.topic ? q.topic+" -- " : "")+q.question.slice(0,80);
+      askedLog.push(summary);
+      if(askedLog.length>30) askedLog.shift();
+      renderQ(q);
+    } else {
+      showTutor(res);
+      waiting = false;
+    }
+    document.getElementById("qiBtn").disabled = false;
+  });
+}
+
+function sendMsg(){
+  var inp = document.getElementById("qi");
+  var text = inp.value.trim();
+  if(!text) return;
+  inp.value = ""; inp.style.height = "auto";
+  if(!started){ started=true; }
+  var em = document.getElementById("qempty");
+  if(em) em.parentNode.removeChild(em);
+
+  var feed = document.getElementById("qfeed");
+  var um = document.createElement("div");
+  um.style.cssText = "display:flex;justify-content:flex-end;margin-bottom:8px";
+  um.innerHTML = "<div style='background:var(--blue-bg);border:1px solid #c5d5f8;border-radius:10px;border-top-right-radius:3px;padding:9px 13px;max-width:70%;font-size:.84rem;color:var(--blue)'>"+text+"</div>";
+  feed.appendChild(um);
+
+  document.getElementById("qiBtn").disabled = true;
+  var th = document.createElement("div");
+  th.className = "thinking"; th.id = "thinking";
+  th.innerHTML = "<div class='dots'><div class='dot'></div><div class='dot'></div><div class='dot'></div></div><span>Thinking...</span>";
+  feed.appendChild(th);
+  scrollFeed();
+
+  var sys = getSys()+"\n\nIf the student asks a general question rather than answering a quiz, respond helpfully then generate a new quiz question in the correct format.";
+  claude([{role:"user",content:text}], sys, function(res, err){
+    var thEl = document.getElementById("thinking");
+    if(thEl) thEl.parentNode.removeChild(thEl);
+    if(err){ showErr(err); document.getElementById("qiBtn").disabled=false; return; }
+    var q = parseQ(res);
+    if(q.question && q.opts.length>0) renderQ(q);
+    else showTutor(res);
+    document.getElementById("qiBtn").disabled = false;
+  });
+}
+
+function showTutor(text){
+  var d = document.createElement("div");
+  d.style.cssText = "background:var(--white);border:1.5px solid var(--border);border-radius:10px;border-top-left-radius:3px;padding:12px 15px;font-size:.83rem;color:var(--text2);line-height:1.6;max-width:88%;margin-bottom:8px;box-shadow:var(--sh)";
+  d.innerHTML = text.replace(/
+/g,"<br>");
+  document.getElementById("qfeed").appendChild(d);
+  scrollFeed();
+}
+
+function showErr(msg){
+  var d = document.createElement("div");
+  d.style.cssText = "background:var(--red-bg);border:1px solid #f5c0c0;border-radius:8px;padding:10px 14px;font-size:.82rem;color:var(--red);margin-bottom:8px";
+  d.textContent = "Error: "+msg+" - please try again.";
+  document.getElementById("qfeed").appendChild(d);
+  scrollFeed();
+}
+
+function resetQuiz(){
+  askedLog=[]; angleIdx=0; waiting=false; started=false;
+  correct=0; total=0; streak=0; diff="medium";
+  updateStats();
+  showEmpty();
+}
+
+function updateStats(){
+  document.getElementById("stC").textContent = correct;
+  document.getElementById("stT").textContent = total;
+  if(total>0){
+    var p = Math.round(correct/total*100);
+    var el = document.getElementById("stP");
+    el.textContent = p+"%";
+    el.style.color = p>=75 ? "var(--green)" : p>=60 ? "var(--gold)" : "var(--red)";
+    var sp = document.getElementById("scoreSpill");
+    sp.textContent = p+"% session";
+    sp.className = "spill"+(p>=75?" pass":"");
+  }
+  var sk = document.getElementById("streakSpill");
+  if(streak>=2){ sk.style.display="inline"; document.getElementById("streakN").textContent=streak; }
+  else sk.style.display="none";
+}
+
+function scrollFeed(){
+  var f = document.getElementById("qfeed");
+  setTimeout(function(){ f.scrollTop = f.scrollHeight; }, 80);
+}
+
+function qiKey(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}}
+function qiResize(el){el.style.height="auto";el.style.height=Math.min(el.scrollHeight,90)+"px";}
+
+// STUDY GUIDE & VOCAB
+function buildGrid(id, fn){
+  var g = document.getElementById(id);
+  for(var i=0;i<TOPICS.length;i++){
+    (function(t){
+      var b = document.createElement("button");
+      b.className = "pick-btn";
+      b.innerHTML = "<div class='pick-icon'>"+t.icon+"</div>"
+        +"<div class='pick-body'><div class='pick-name'>"+t.full+"</div><div class='pick-units'>"+t.units+"</div></div>"
+        +"<span class='pick-score "+t.ic+"'>"+t.score+"%</span>";
+      b.onclick = function(){ fn(t); };
+      g.appendChild(b);
+    })(TOPICS[i]);
+  }
+}
+
+function loadSG(t){
+  document.getElementById("sgGrid").style.display = "none";
+  var out = document.getElementById("sgOut"); out.style.display="block";
+  out.innerHTML = "<button class='back-btn' onclick='document.getElementById("sgGrid").style.display="";document.getElementById("sgOut").style.display="none"'>← Back</button>"
+    +"<div class='loading'><div class='spin'></div>Building study guide for "+t.full+"...</div>";
+  var sys = "You are an expert Arizona real estate exam tutor. Generate a comprehensive study guide for: "+t.full+" (units: "+t.units+").
+
+Textbook (Arizona Real Estate Fundamentals, ASREB 3rd Ed.):
+"+TB.slice(0,48000)+"
+
+Use these exact section headers (## for each):
+## 1. Simple Explanation
+## 2. Detailed Explanation
+## 3. Key Definitions
+## 4. Arizona Laws and Regulations
+## 5. Memory Tricks
+## 6. Common Exam Traps
+## 7. Real-World Examples
+## 8. Rapid Review
+## 9. Most Likely on Exam
+
+Use ASREB exact Arizona terminology.";
+  claude([{role:"user",content:"Generate the full study guide for: "+t.full}], sys, function(res, err){
+    out.innerHTML = "<button class='back-btn' onclick='document.getElementById("sgGrid").style.display="";document.getElementById("sgOut").style.display="none"'>← Back</button>"
+      +(err ? "<div style='color:var(--red);padding:16px'>Error: "+err+"</div>"
+             : "<div class='gen'><h1>"+t.icon+" "+t.full+"</h1>"+fmtContent(res)+"</div>");
+  });
+}
+
+function loadVocab(t){
+  document.getElementById("vocabGrid").style.display = "none";
+  var out = document.getElementById("vocabOut"); out.style.display="block";
+  out.innerHTML = "<button class='back-btn' onclick='document.getElementById("vocabGrid").style.display="";document.getElementById("vocabOut").style.display="none"'>← Back</button>"
+    +"<div class='loading'><div class='spin'></div>Building vocabulary for "+t.full+"...</div>";
+  var sys = "You are an Arizona real estate exam vocabulary expert. Generate 25 key terms for: "+t.full+".
+
+Textbook (ASREB): "+TB.slice(0,40000)+"
+
+For each term use EXACTLY this format:
+## [Term]
+**Definition:** [plain English, 1-2 sentences]
+**Example:** [brief usage]
+**Do not confuse with:** [similar term and how to tell them apart]
+
+---
+
+Only terms from or relevant to the textbook.";
+  claude([{role:"user",content:"Vocabulary list for: "+t.full}], sys, function(res, err){
+    out.innerHTML = "<button class='back-btn' onclick='document.getElementById("vocabGrid").style.display="";document.getElementById("vocabOut").style.display="none"'>← Back</button>"
+      +(err ? "<div style='color:var(--red);padding:16px'>Error: "+err+"</div>"
+             : "<div class='gen'><h1>"+t.icon+" "+t.full+" - Vocabulary</h1>"+fmtContent(res)+"</div>");
+  });
+}
+
+function fmtContent(text){
+  return text
+    .replace(/^## (.+)$/gm,"<h2>$1</h2>")
+    .replace(/^### (.+)$/gm,"<h3>$1</h3>")
+    .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/^- (.+)$/gm,"<li>$1</li>")
+    .replace(/(<li>[\s\S]*?<\/li>
+?)+/g,function(m){return "<ul>"+m+"</ul>";})
+    .replace(/^---$/gm,"<hr>")
+    .replace(/
+
+/g,"</p><p>")
+    .replace(/
+/g,"<br>");
+}
+</script>
+</body>
+</html>

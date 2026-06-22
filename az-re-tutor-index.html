@@ -222,6 +222,69 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
 }
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ── PRACTICE TEST ─────────────────────────────────── */
+#panel-practice.on{display:flex;flex-direction:column;height:100vh;padding-top:54px;overflow:hidden}
+.pt-header{background:var(--white);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.pt-timer{font-size:1rem;font-weight:800;color:var(--green);background:var(--green-bg);padding:4px 12px;border-radius:20px;min-width:64px;text-align:center;transition:color .3s,background .3s}
+.pt-timer.urgent{color:var(--red);background:var(--red-bg);animation:ptpulse 1s infinite}
+@keyframes ptpulse{0%,100%{opacity:1}50%{opacity:.5}}
+.pt-qnum{font-weight:700;font-size:.85rem;color:var(--text2);flex:1}
+.pt-score-live{font-size:.78rem;color:var(--muted);white-space:nowrap}
+.pt-start-wrap{display:flex;align-items:center;justify-content:center;flex:1;padding:40px 20px}
+.pt-start-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);max-width:480px;width:100%;padding:32px 28px;text-align:center;box-shadow:var(--sh)}
+.pt-start-card h2{font-size:1.3rem;font-weight:800;margin-bottom:8px}
+.pt-start-card p{color:var(--text2);font-size:.88rem;margin-bottom:6px}
+.pt-start-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;margin:4px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-bd)}
+.pt-start-badges{margin:14px 0}
+.pt-start-btn{margin-top:20px;width:100%;padding:14px;border-radius:10px;background:var(--gold);color:#fff;border:none;font:1rem/1 inherit;font-weight:800;cursor:pointer;letter-spacing:.02em}
+.pt-start-btn:hover{background:#a06a08}
+.pt-progress{height:4px;background:var(--border);position:relative;flex-shrink:0}
+.pt-progress-bar{height:100%;background:var(--gold);transition:width .3s;border-radius:0 2px 2px 0}
+.pt-qbody{flex:1;overflow-y:auto;padding:18px 16px 40px;max-width:720px;width:100%;margin:0 auto}
+.pt-qtopic{font-size:.7rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px}
+.pt-qtext{font-size:1rem;font-weight:600;line-height:1.5;margin-bottom:18px;color:var(--text)}
+.pt-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.pt-opt{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);background:var(--white);text-align:left;cursor:pointer;transition:border-color .12s,background .12s;width:100%}
+.pt-opt:hover:not([disabled]){border-color:var(--gold);background:var(--gold-bg)}
+.pt-opt[disabled]{cursor:default}
+.pt-opt-letter{font-weight:800;font-size:.82rem;color:var(--muted);min-width:18px;padding-top:1px;flex-shrink:0}
+.pt-opt-text{font-size:.88rem;line-height:1.45}
+.pt-opt.correct{border-color:var(--green)!important;background:var(--green-bg)!important}
+.pt-opt.correct .pt-opt-letter{color:var(--green)}
+.pt-opt.wrong{border-color:var(--red)!important;background:var(--red-bg)!important}
+.pt-opt.wrong .pt-opt-letter{color:var(--red)}
+.pt-feedback{padding:13px 15px;border-radius:10px;font-size:.84rem;line-height:1.55;margin-bottom:14px;display:none}
+.pt-fb-correct{background:var(--green-bg);color:var(--green);border:1px solid var(--green)}
+.pt-fb-wrong{background:var(--red-bg);color:var(--red);border:1px solid var(--red)}
+.pt-fb-correct strong,.pt-fb-wrong strong{display:block;margin-bottom:4px}
+.pt-next-wrap{text-align:right;display:none}
+.pt-next{padding:11px 26px;border-radius:10px;background:var(--gold);color:#fff;border:none;font:.9rem/1 inherit;font-weight:700;cursor:pointer}
+.pt-next:hover{background:#a06a08}
+/* Results */
+.pt-results{padding:8px 0 60px}
+.pt-res-big{text-align:center;padding:28px 20px;border-radius:var(--r);margin-bottom:20px}
+.pt-res-big.pass{background:var(--green-bg);border:2px solid var(--green)}
+.pt-res-big.fail{background:var(--red-bg);border:2px solid var(--red)}
+.pt-res-pct{font-size:3.2rem;font-weight:900;line-height:1}
+.pt-res-big.pass .pt-res-pct{color:var(--green)}
+.pt-res-big.fail .pt-res-pct{color:var(--red)}
+.pt-res-verdict{font-size:1.05rem;font-weight:800;margin:4px 0}
+.pt-res-big.pass .pt-res-verdict{color:var(--green)}
+.pt-res-big.fail .pt-res-verdict{color:var(--red)}
+.pt-res-sub{font-size:.8rem;color:var(--text2);margin-top:6px}
+.pt-res-breakdown{background:var(--white);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:20px}
+.pt-res-section-head{font-size:.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;padding:9px 14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.pt-res-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:.84rem}
+.pt-res-row:last-child{border-bottom:none}
+.pt-res-tname{font-weight:500;color:var(--text)}
+.pt-res-tscore{font-weight:700;padding:2px 9px;border-radius:20px;font-size:.75rem;white-space:nowrap}
+.pt-res-tscore.pass{background:var(--green-bg);color:var(--green)}
+.pt-res-tscore.warn{background:var(--gold-bg);color:var(--gold)}
+.pt-res-tscore.fail{background:var(--red-bg);color:var(--red)}
+.pt-restart{width:100%;padding:13px;border-radius:10px;background:var(--gold);color:#fff;border:none;font:1rem/1 inherit;font-weight:700;cursor:pointer}
+.pt-restart:hover{background:#a06a08}
+
 </style>
 </head>
 <body>
@@ -232,6 +295,7 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
   <button class="ntab" onclick="nav('quiz')" id="nt-quiz">🎯 <span class="lbl">Quiz Me</span></button>
   <button class="ntab" onclick="nav('study')" id="nt-study">📖 <span class="lbl">Study Guide</span></button>
   <button class="ntab" onclick="nav('vocab')" id="nt-vocab">📝 <span class="lbl">Vocabulary</span></button>
+  <button class="ntab" onclick="nav('practice')" id="nt-practice">🏆 <span class="lbl">Practice Test</span></button>
   <div class="nav-r">
     <span class="spill" id="streakSpill" style="display:none">🔥 <span id="streakN">0</span></span>
     <span class="spill" id="scoreSpill">65% need 75%</span>
@@ -278,6 +342,34 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
     <div class="qstat"><div class="qstat-n" id="stC">0</div><div class="qstat-l">Correct</div></div>
     <div class="qstat"><div class="qstat-n" id="stT">0</div><div class="qstat-l">Total</div></div>
     <div class="qstat"><div class="qstat-n" id="stP">--</div><div class="qstat-l">Score</div></div>
+  </div>
+</div>
+
+
+<!-- PRACTICE TEST -->
+<div class="panel" id="panel-practice">
+  <div class="pt-start-wrap" id="pt-start-wrap">
+    <div class="pt-start-card">
+      <div style="font-size:2rem;margin-bottom:10px">🏆</div>
+      <h2>Full Practice Exam</h2>
+      <p>Simulates the AZ real estate state exam — 100 questions from all 11 topics, with immediate answer feedback.</p>
+      <div class="pt-start-badges">
+        <span class="pt-start-badge">⏱ 90-minute timer</span>
+        <span class="pt-start-badge">100 questions</span>
+        <span class="pt-start-badge">All 11 topics</span>
+        <span class="pt-start-badge">75% to pass</span>
+      </div>
+      <button class="pt-start-btn" onclick="startPracticeTest()">Start Practice Exam →</button>
+    </div>
+  </div>
+  <div id="pt-test-wrap" style="display:none;display:flex;flex-direction:column;flex:1;overflow:hidden;height:100%">
+    <div class="pt-header">
+      <span class="pt-timer" id="pt-timer">90:00</span>
+      <span class="pt-qnum" id="pt-qnum">0 / 100</span>
+      <span class="pt-score-live" id="pt-score-live">0 correct</span>
+    </div>
+    <div class="pt-progress"><div class="pt-progress-bar" id="pt-progress-bar" style="width:0%"></div></div>
+    <div class="pt-qbody" id="pt-qbody"></div>
   </div>
 </div>
 
@@ -941,6 +1033,157 @@ function loadVocab(t){
   }
   if(list.length===0){ var p2=document.createElement("p"); p2.textContent="No vocabulary yet for this topic."; gen.appendChild(p2); }
 }
+
+// ── PRACTICE TEST ────────────────────────────────────────────────────────
+var PT = {
+  questions: [], idx: 0, correct: 0, wrong: 0,
+  topicResults: {}, startTime: null, timerInterval: null,
+  totalSecs: 90 * 60
+};
+
+function startPracticeTest() {
+  PT.idx = 0; PT.correct = 0; PT.wrong = 0;
+  PT.topicResults = {};
+  var pool = [];
+  var tids = Object.keys(QBANK);
+  var base = Math.floor(100 / tids.length);
+  var extra = 100 - base * tids.length;
+  tids.forEach(function(tid, ti) {
+    var qs = QBANK[tid].slice();
+    for (var i = qs.length-1; i > 0; i--) {
+      var j = Math.floor(Math.random()*(i+1));
+      var t = qs[i]; qs[i] = qs[j]; qs[j] = t;
+    }
+    var n = base + (ti < extra ? 1 : 0);
+    var topic = TOPICS.find(function(t){return t.id===tid;});
+    var tname = topic ? topic.name : tid;
+    PT.topicResults[tid] = {correct:0, total:0, name:tname};
+    qs.slice(0, Math.min(n, qs.length)).forEach(function(q) {
+      pool.push({topicId:tid, topicName:tname, q:q});
+    });
+  });
+  for (var i = pool.length-1; i > 0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+  }
+  PT.questions = pool.slice(0, 100);
+  PT.startTime = Date.now();
+  document.getElementById('pt-start-wrap').style.display = 'none';
+  var tw = document.getElementById('pt-test-wrap');
+  tw.style.display = 'flex';
+  tw.style.flexDirection = 'column';
+  tw.style.flex = '1';
+  tw.style.overflow = 'hidden';
+  tw.style.height = '100%';
+  if (PT.timerInterval) clearInterval(PT.timerInterval);
+  PT.timerInterval = setInterval(ptTick, 1000);
+  ptTick();
+  renderPQ();
+}
+
+function ptTick() {
+  var remaining = PT.totalSecs - Math.floor((Date.now()-PT.startTime)/1000);
+  if (remaining <= 0) { clearInterval(PT.timerInterval); finishPT(); return; }
+  var m = Math.floor(remaining/60), s = remaining%60;
+  var el = document.getElementById('pt-timer');
+  if (el) {
+    el.textContent = m + ':' + (s<10?'0':'') + s;
+    el.className = 'pt-timer' + (remaining<300?' urgent':'');
+  }
+}
+
+function renderPQ() {
+  if (PT.idx >= PT.questions.length) { finishPT(); return; }
+  var item = PT.questions[PT.idx];
+  var q = item.q;
+  var pct = Math.round((PT.idx/PT.questions.length)*100);
+  var bar = document.getElementById('pt-progress-bar');
+  if (bar) bar.style.width = pct + '%';
+  document.getElementById('pt-qnum').textContent = (PT.idx+1) + ' / ' + PT.questions.length;
+  document.getElementById('pt-score-live').textContent = PT.correct + ' correct';
+  var isLast = PT.idx >= PT.questions.length - 1;
+  var opts = q.o.map(function(opt, i) {
+    return '<button class="pt-opt" onclick="answerPT('+i+')">'+
+      '<span class="pt-opt-letter">'+['A','B','C','D'][i]+'</span>'+
+      '<span class="pt-opt-text">'+opt+'</span></button>';
+  }).join('');
+  document.getElementById('pt-qbody').innerHTML =
+    '<div class="pt-qtopic">'+item.topicName+'</div>'+
+    '<div class="pt-qtext">'+q.q+'</div>'+
+    '<div class="pt-opts" id="pto">'+opts+'</div>'+
+    '<div class="pt-feedback" id="ptfb"></div>'+
+    '<div class="pt-next-wrap" id="ptnw">'+
+      '<button class="pt-next" onclick="nextPQ()">'+(isLast?'See Results ✓':'Next Question →')+'</button>'+
+    '</div>';
+}
+
+function answerPT(chosen) {
+  var item = PT.questions[PT.idx];
+  var q = item.q;
+  var ok = (chosen === q.c);
+  if (ok) { PT.correct++; PT.topicResults[item.topicId].correct++; }
+  else { PT.wrong++; }
+  PT.topicResults[item.topicId].total++;
+  var opts = document.querySelectorAll('.pt-opt');
+  opts.forEach(function(btn,i) {
+    btn.disabled = true;
+    if (i===q.c) btn.classList.add('correct');
+    else if (i===chosen && !ok) btn.classList.add('wrong');
+  });
+  var fb = document.getElementById('ptfb');
+  fb.style.display = 'block';
+  fb.className = 'pt-feedback ' + (ok?'pt-fb-correct':'pt-fb-wrong');
+  fb.innerHTML = '<strong>'+(ok?'✓ Correct!':'✗ Incorrect')+'</strong>'+q.e;
+  document.getElementById('ptnw').style.display = 'block';
+  document.getElementById('pt-score-live').textContent = PT.correct + ' correct';
+}
+
+function nextPQ() { PT.idx++; renderPQ(); }
+
+function finishPT() {
+  if (PT.timerInterval) clearInterval(PT.timerInterval);
+  var total = PT.correct + PT.wrong;
+  var pct = total>0 ? Math.round((PT.correct/total)*100) : 0;
+  var pass = pct>=75;
+  var elapsed = Math.floor((Date.now()-PT.startTime)/1000);
+  var timeStr = Math.floor(elapsed/60)+'m '+elapsed%60+'s';
+  var rows = Object.keys(PT.topicResults).map(function(tid) {
+    var r = PT.topicResults[tid];
+    if (!r.total) return '';
+    var p = Math.round((r.correct/r.total)*100);
+    var cls = p>=75?'pass':p>=50?'warn':'fail';
+    return '<div class="pt-res-row">'+
+      '<span class="pt-res-tname">'+r.name+'</span>'+
+      '<span class="pt-res-tscore '+cls+'">'+r.correct+'/'+r.total+' ('+p+'%)</span>'+
+    '</div>';
+  }).join('');
+  document.getElementById('pt-progress-bar').style.width='100%';
+  document.getElementById('pt-qnum').textContent='Complete';
+  document.getElementById('pt-score-live').textContent=pct+'% — '+(pass?'PASS':'needs work');
+  document.getElementById('pt-timer').textContent='Done';
+  document.getElementById('pt-qbody').innerHTML=
+    '<div class="pt-results">'+
+      '<div class="pt-res-big '+(pass?'pass':'fail')+'">'+
+        '<div class="pt-res-pct">'+pct+'%</div>'+
+        '<div class="pt-res-verdict">'+(pass?'✓ PASS — You're ready!':'✗ Keep Practicing')+'</div>'+
+        '<div class="pt-res-sub">'+PT.correct+' correct out of '+total+' questions · '+timeStr+'</div>'+
+      '</div>'+
+      '<div class="pt-res-breakdown">'+
+        '<div class="pt-res-section-head">Score by Topic</div>'+rows+
+      '</div>'+
+      '<button class="pt-restart" onclick="resetPT()">🔄 Take Another Practice Exam</button>'+
+    '</div>';
+}
+
+function resetPT() {
+  document.getElementById('pt-start-wrap').style.display = 'flex';
+  document.getElementById('pt-test-wrap').style.display = 'none';
+  document.getElementById('pt-timer').textContent = '90:00';
+  document.getElementById('pt-qnum').textContent = '0 / 100';
+  document.getElementById('pt-score-live').textContent = '0 correct';
+  document.getElementById('pt-progress-bar').style.width = '0%';
+}
+
 </script>
 </body>
 </html>

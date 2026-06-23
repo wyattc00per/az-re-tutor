@@ -306,6 +306,7 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
   <button class="ntab" onclick="nav('study')" id="nt-study">📖 <span class="lbl">Study Guide</span></button>
   <button class="ntab" onclick="nav('vocab')" id="nt-vocab">📝 <span class="lbl">Vocabulary</span></button>
   <button class="ntab" onclick="nav('practice')" id="nt-practice">🏆 <span class="lbl">Practice Test</span></button>
+  <button class="ntab" onclick="nav('contracts')" id="nt-contracts">📋 <span class="lbl">Contracts</span></button>
   <div class="nav-r">
     <span class="spill" id="streakSpill" style="display:none">🔥 <span id="streakN">0</span></span>
     <span class="spill" id="scoreSpill">65% need 75%</span>
@@ -355,6 +356,34 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
   </div>
 </div>
 
+
+<!-- CONTRACT WRITING TEST -->
+<div class="panel" id="panel-contracts">
+  <div class="pt-start-wrap" id="cw-start-wrap">
+    <div class="pt-start-card">
+      <div style="font-size:2rem;margin-bottom:10px">📋</div>
+      <h2>Contract Writing Practice</h2>
+      <p>31 questions on contracts, listing agreements, earnest money, antitrust, options, purchase contracts, and dispute resolution — drawn directly from the ASREB textbook.</p>
+      <div class="pt-start-badges">
+        <span class="pt-start-badge">⏱ 45-minute timer</span>
+        <span class="pt-start-badge">31 questions</span>
+        <span class="pt-start-badge">Contract law</span>
+        <span class="pt-start-badge">75% to pass</span>
+      </div>
+      <button class="pt-start-btn" onclick="startCW()">Start Contract Exam →</button>
+      <div class="pt-history" id="cw-history"></div>
+    </div>
+  </div>
+  <div id="cw-test-wrap" style="display:none;display:flex;flex-direction:column;flex:1;overflow:hidden;height:100%">
+    <div class="pt-header">
+      <span class="pt-timer" id="cw-timer">45:00</span>
+      <span class="pt-qnum" id="cw-qnum">0 / 31</span>
+      <span class="pt-score-live" id="cw-score-live">0 correct</span>
+    </div>
+    <div class="pt-progress"><div class="pt-progress-bar" id="cw-progress-bar" style="width:0%"></div></div>
+    <div class="pt-qbody" id="cw-qbody"></div>
+  </div>
+</div>
 
 <!-- PRACTICE TEST -->
 <div class="panel" id="panel-practice">
@@ -453,6 +482,7 @@ function nav(page){
   document.getElementById("panel-"+page).classList.add("on");
   document.getElementById("nt-"+page).classList.add("on");
   if(page==='practice') renderPTHistory();
+  if(page==='contracts') renderCWHistory();
 }
 
 // HOME - show ALL topics with scores
@@ -1100,6 +1130,124 @@ function resetPT() {
   renderPTHistory();
 }
 
+/* ===== CONTRACT WRITING TEST ===== */
+var CW={questions:[],idx:0,correct:0,wrong:0,startTime:null,timerInterval:null,totalSecs:45*60};
+
+function getCWHistory(){try{return JSON.parse(localStorage.getItem('cwHistory'))||[];}catch(e){return[];}}
+function saveCWHistory(e){try{var h=getCWHistory();h.unshift(e);if(h.length>20)h=h.slice(0,20);localStorage.setItem('cwHistory',JSON.stringify(h));}catch(e){}}
+function clearCWHistory(){try{localStorage.removeItem('cwHistory');}catch(e){}renderCWHistory();}
+function renderCWHistory(){
+  var el=document.getElementById('cw-history');
+  if(!el)return;
+  var h=getCWHistory();
+  if(!h.length){el.innerHTML='<div class="pt-history-empty">No exams taken yet</div>';return;}
+  var rows=h.map(function(r){
+    var cls=r.pass?'pass':'fail';
+    return '<div class="pt-hist-row">'+
+      '<span class="pt-hist-date">'+r.date+'</span>'+
+      '<span class="pt-hist-score">'+r.pct+'%</span>'+
+      '<span class="pt-hist-badge '+cls+'">'+(r.pass?'PASS':'FAIL')+'</span>'+
+      '<span style="color:var(--text2);font-size:.75rem">'+r.correct+'/'+r.total+' · '+r.time+'</span>'+
+    '</div>';
+  }).join('');
+  el.innerHTML='<div class="pt-history-head"><span>Score History</span><button class="pt-history-clear" onclick="clearCWHistory()">Clear</button></div>'+rows;
+}
+
+function startCW(){
+  CW.questions=CWBANK.slice().sort(function(){return Math.random()-0.5;});
+  CW.idx=0;CW.correct=0;CW.wrong=0;
+  CW.startTime=Date.now();
+  CW.totalSecs=45*60;
+  document.getElementById('cw-start-wrap').style.display='none';
+  var tw=document.getElementById('cw-test-wrap');
+  tw.style.display='flex';
+  if(CW.timerInterval)clearInterval(CW.timerInterval);
+  CW.timerInterval=setInterval(cwTick,1000);
+  renderCWQ();
+}
+
+function cwTick(){
+  CW.totalSecs--;
+  var m=Math.floor(CW.totalSecs/60),s=CW.totalSecs%60;
+  var el=document.getElementById('cw-timer');
+  el.textContent=m+':'+(s<10?'0':'')+s;
+  if(CW.totalSecs<=300)el.style.color='#dc2626';
+  if(CW.totalSecs<=0){clearInterval(CW.timerInterval);finishCW();}
+}
+
+function renderCWQ(){
+  if(CW.idx>=CW.questions.length){finishCW();return;}
+  var q=CW.questions[CW.idx];
+  var total=CW.questions.length;
+  document.getElementById('cw-qnum').textContent=(CW.idx+1)+' / '+total;
+  document.getElementById('cw-score-live').textContent=CW.correct+' correct';
+  document.getElementById('cw-progress-bar').style.width=(CW.idx/total*100)+'%';
+  var opts=q.o.map(function(o,i){
+    return '<button class="pt-opt" onclick="answerCW('+i+')">'+
+      '<span class="pt-opt-letter">'+['A','B','C','D'][i]+'</span>'+
+      '<span class="pt-opt-text">'+o+'</span></button>';
+  }).join('');
+  document.getElementById('cw-qbody').innerHTML=
+    '<div class="pt-qtopic">📋 Contract Writing</div>'+
+    '<div class="pt-qtext">'+q.q+'</div>'+
+    '<div class="pt-opts">'+opts+'</div>';
+  document.getElementById('cw-qbody').scrollTop=0;
+}
+
+function answerCW(chosen){
+  var q=CW.questions[CW.idx];
+  var correct=q.c;
+  var btns=document.querySelectorAll('#cw-qbody .pt-opt');
+  for(var i=0;i<btns.length;i++)btns[i].disabled=true;
+  if(chosen===correct){CW.correct++;btns[chosen].classList.add('correct');}
+  else{CW.wrong++;btns[chosen].classList.add('wrong');btns[correct].classList.add('correct');}
+  var exp=document.createElement('div');
+  exp.className='pt-explanation';
+  exp.innerHTML='<strong>'+(chosen===correct?'✓ Correct':'✗ Incorrect')+'</strong> — '+q.e+
+    '<br><button class="pt-next-btn" onclick="nextCWQ()">Next →</button>';
+  document.getElementById('cw-qbody').appendChild(exp);
+  exp.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function nextCWQ(){CW.idx++;renderCWQ();}
+
+function finishCW(){
+  if(CW.timerInterval)clearInterval(CW.timerInterval);
+  var total=CW.correct+CW.wrong;
+  var pct=total>0?Math.round((CW.correct/total)*100):0;
+  var pass=pct>=75;
+  var elapsed=Math.floor((Date.now()-CW.startTime)/1000);
+  var timeStr=Math.floor(elapsed/60)+'m '+elapsed%60+'s';
+  var now=new Date();
+  var dateStr=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  saveCWHistory({pct:pct,pass:pass,correct:CW.correct,total:total,time:timeStr,date:dateStr});
+  document.getElementById('cw-progress-bar').style.width='100%';
+  document.getElementById('cw-qnum').textContent='Complete';
+  document.getElementById('cw-score-live').textContent=pct+'% — '+(pass?'PASS':'needs work');
+  document.getElementById('cw-timer').textContent='Done';
+  document.getElementById('cw-qbody').innerHTML=
+    '<div class="pt-results">'+
+      '<div class="pt-res-big '+(pass?'pass':'fail')+'">'+
+        '<div class="pt-res-pct">'+pct+'%</div>'+
+        '<div class="pt-res-verdict">'+(pass?'✓ PASS — Well done!':'✗ Keep Studying')+'</div>'+
+        '<div class="pt-res-sub">'+CW.correct+' correct out of '+total+' · '+timeStr+'</div>'+
+      '</div>'+
+      '<button class="pt-restart" onclick="resetCW()">🔄 Take Another Contract Exam</button>'+
+    '</div>';
+}
+
+function resetCW(){
+  document.getElementById('cw-start-wrap').style.display='flex';
+  document.getElementById('cw-test-wrap').style.display='none';
+  document.getElementById('cw-timer').textContent='45:00';
+  document.getElementById('cw-qnum').textContent='0 / 31';
+  document.getElementById('cw-score-live').textContent='0 correct';
+  document.getElementById('cw-progress-bar').style.width='0%';
+  renderCWHistory();
+}
+/* ===== END CONTRACT WRITING TEST ===== */
+
+var CWBANK=[{q:"Under Arizona's Statute of Frauds, which of the following does NOT need to be in writing to be enforceable?",o:["A residential lease for 8 months","An agreement for the transfer or sale of real property","A lease for more than one year","A listing agreement hiring a broker to sell property for compensation"],c:0,e:"The Statute of Frauds requires listing agreements, purchase contracts, and leases over one year to be in writing. A residential lease of 8 months (one year or less) is an exception and does not need to be in writing to be enforceable."},{q:"The Parol Evidence Rule states that:",o:["Both verbal and written terms carry equal weight in court","Verbal modifications made after signing are always valid","Verbal agreements always supersede written contracts","A written contract takes precedence over any prior verbal agreement — the agreement stands within the four corners of the contract"],c:3,e:"The Parol Evidence Rule means a written contract has precedence over any verbal agreement. Courts look only within the four corners of the written contract and generally will not admit outside verbal testimony to contradict it."},{q:"Which of the following is an example of a UNILATERAL contract?",o:["A residential lease between landlord and tenant","An option to purchase real property","An exclusive right to sell listing agreement","A purchase contract between buyer and seller"],c:1,e:"A unilateral contract is one in which only one party makes a binding promise. An option is unilateral — the optionor promises to sell if the optionee decides to exercise, but the optionee is NOT obligated to buy. Purchase contracts and leases are bilateral because both parties make binding promises."},{q:"A signed purchase contract where closing has not yet taken place is best described as:",o:["An implied contract","An executory contract","An executed contract","A void contract"],c:1,e:"An executory contract is one where the terms and conditions have not yet been fully performed by all parties. A purchase contract is executory from signing until closing. Once all parties have fully performed, it becomes an executed contract."},{q:"Which element is NOT required for a valid real estate contract in Arizona?",o:["Monetary (cash) consideration","Legal object or purpose","Offer and acceptance (mutual assent)","Competent parties"],c:0,e:"A valid contract requires competent parties, legal consideration (not necessarily cash — good consideration such as love and affection can suffice for gifts), offer and acceptance, legal object, and compliance with the Statute of Frauds. Monetary consideration specifically is not required; any thing of value qualifies."},{q:"In Arizona, a contract signed by a person under 18 years of age is:",o:["Voidable at the option of the minor","Valid and fully enforceable as written","Voidable at the option of the other party","Void — it has no legal effect whatsoever"],c:0,e:"Under Arizona law, anyone under 18 is legally incompetent to enter a binding contract. Contracts signed by minors are voidable — the minor may choose to void the contract, but the other party cannot. If the minor elects to remain in the contract, it becomes binding."},{q:"A contract for the sale of property contaminated with illegal substances where cleanup is legally required would be classified as:",o:["Void — because the legal object requirement is not met","Executory until the cleanup is completed","Voidable at the seller's option","Unenforceable only if the buyer objects"],c:0,e:"A contract must have a legal object (legal purpose). If the purpose of the contract involves an illegal act, the contract is void — it has no legal effect and is treated as if it never existed. Neither party can enforce it."},{q:"Under an Exclusive Agency listing in Arizona, when does the seller NOT owe the listing broker a commission?",o:["When the listing broker procures the buyer","When the property sells above the listing price","When another broker procures the buyer","When the seller sells the property themselves without the broker's assistance"],c:3,e:"In an Exclusive Agency listing, the seller appoints the broker as exclusive agent but reserves the right to sell the property themselves without owing a commission. If any broker (including the listing broker) procures the buyer, a commission is owed."},{q:"Which listing agreement provides the MOST protection for the listing broker?",o:["Open listing","Net listing","Exclusive agency listing","Exclusive right to sell listing"],c:3,e:"The Exclusive Right to Sell listing provides the most broker protection — the broker earns a commission if ANYONE sells the property during the listing period, including the seller themselves. The broker is guaranteed compensation for their marketing efforts."},{q:"A net listing in Arizona is:",o:["Required to be disclosed to the MLS within 24 hours","The same as an exclusive right to sell listing","Illegal and grounds for license revocation","Legal but frowned upon because an unscrupulous broker could take advantage of an unknowledgeable seller"],c:3,e:"Net listings are legal in Arizona but are considered problematic because the broker's profit is the difference between the agreed net amount and the actual sale price. This creates a conflict of interest and potential for the broker to exploit an unknowledgeable seller."},{q:"Under Arizona Commissioner's Rules, when more than one offer is received on a property, the listing broker must:",o:["Present ALL offers — written or verbal — promptly to the seller","Present only written offers and disregard verbal ones","Wait until all competing offers have been received before presenting any","Present only the highest offer to avoid confusing the seller"],c:0,e:"Arizona Real Estate Commissioner's Rules require licensees to promptly submit ALL offers — written or verbal — to the client. The seller has the right to review every offer made on their property and decide how to respond."},{q:"A counteroffer in a real estate transaction has what effect on the original offer?",o:["Only material changes void the original offer; minor changes do not","The original offer remains valid for 24 hours after the counter is made","The original offer is null and void — even if changes are minor","The original offer is held in reserve pending the buyer's response to the counter"],c:2,e:"Any modification to an offer — no matter how minor — constitutes a counteroffer that simultaneously rejects the original offer and makes a new one. The original offeror is no longer bound to ANY terms of the original offer."},{q:"Earnest money in Arizona is typically held by:",o:["The escrow company always — never the broker","The listing broker","The seller","The buyer's broker"],c:3,e:"In Arizona, earnest money is usually held by and deposited by the buyer's broker in a trust account or placed in escrow. The broker is required by Arizona licensing law to deposit earnest money immediately unless otherwise agreed in writing."},{q:"A licensee who deposits a client's earnest money into their personal checking account has committed:",o:["Neither — it is acceptable temporarily","Both commingling and potentially conversion","Commingling of funds","Conversion of funds"],c:2,e:"Commingling occurs when a licensee mixes client funds with their own personal or business funds. This is strictly prohibited in Arizona. Conversion of funds is the additional step of actually using client funds for personal purposes — even more serious."},{q:"An option contract requires which of the following to be enforceable?",o:["Verbal agreement is sufficient if witnessed","Valuable consideration paid by the optionee at the time the option is granted","A minimum option period of 30 days","The property must be listed in the MLS during the option period"],c:1,e:"An option is a contract and requires valuable consideration (option money) paid by the optionee to the optionor when the option is granted. Without valuable consideration, the option is not enforceable. The optionor cannot revoke a properly supported option during its term."},{q:"How does a Right of First Refusal differ from an Option?",o:["They are legally identical — both are unilateral contracts with the same effect","A right of first refusal allows the holder to buy at any time; an option only allows purchase if the owner decides to sell","Options require consideration; rights of first refusal never require consideration","A right of first refusal lets the holder match a third-party offer only IF the owner decides to sell; an option gives the exclusive right to buy regardless"],c:3,e:"With a Right of First Refusal, the holder can only buy IF the owner decides to sell — they get the first opportunity to match a bona fide third-party offer. An option gives the holder the exclusive right to buy within a set period, regardless of whether the owner wants to sell."},{q:"Price-fixing among competing real estate brokerages violates which federal law?",o:["The Truth in Lending Act (TILA)","The Real Estate Settlement Procedures Act","The Sherman Antitrust Act of 1890","RESPA"],c:2,e:"The Sherman Antitrust Act of 1890 is the primary federal law prohibiting anti-competitive practices. In real estate, this includes price-fixing (brokers agreeing on commission rates), market allocation (dividing geographic areas), and group boycotts of competing companies' listings."},{q:"Which of the following real estate practices is an antitrust violation?",o:["Two competing brokerages agreeing to charge the same commission rate","An MLS requiring all members to submit listings within 24 hours","A broker charging a 5% commission on all listings","A broker offering a discounted commission to attract listings"],c:0,e:"Two competing brokerages agreeing to charge the same commission rate is price-fixing — a violation of the Sherman Antitrust Act. Commissions are always negotiable and must be set independently by each brokerage. Telling consumers that commissions are non-negotiable is also an antitrust violation."},{q:"When a buyer's offer is accepted and written communication of acceptance is delivered to the buyer, the buyer acquires:",o:["Constructive possession of the property","A lien on the seller's property","Equitable title — a contractual interest that will result in full ownership at closing","Legal title to the property"],c:2,e:"Upon acceptance of the offer and communication of that acceptance to the offeror (buyer), the contract becomes binding and the buyer acquires equitable title. This is a contractual interest in the property that will convert to full legal title at closing."},{q:"Under Arizona law, a licensee who is buying or selling property for themselves must:",o:["Use a different broker to avoid any appearance of conflict","Disclose to all parties that they are a licensed real estate salesperson or broker","Obtain written permission from the ADRE before proceeding","Charge the standard commission to maintain licensing compliance"],c:1,e:"Arizona Real Estate Commissioner's Rules require that when a licensee buys or sells property for themselves, they must disclose their licensed status to all parties in the transaction. Failure to disclose is a violation of Arizona license law."},{q:"The boilerplate language in a preprinted Arizona purchase contract refers to:",o:["The negotiated terms written in by the parties","The addenda attached to the purchase contract","The legal description of the property","The standard preprinted language used throughout the contract"],c:3,e:"Boilerplate language is the standard preprinted text in a form contract such as the AAR Residential Resale Purchase Contract. If there is a conflict between the boilerplate (preprinted) language and handwritten or typed additions, the written or typed language prevails."},{q:"In a purchase contract, a financing contingency clause:",o:["Guarantees the buyer will obtain financing","Removes the seller's obligation to make repairs","Requires the seller to provide seller financing if the buyer cannot qualify","Makes the sale dependent on the buyer obtaining a loan commitment, usually by a specified date"],c:3,e:"A financing contingency makes the contract conditional — if the buyer cannot obtain the specified financing by the agreed date, the buyer can void the contract without penalty. It protects buyers from being forced to complete a purchase they cannot fund."},{q:"If the buyer defaults on a purchase contract for no valid reason, the seller's options include all of the following EXCEPT:",o:["Suing the buyer for specific performance","Automatically relisting the property and keeping the buyer's deposit as a penalty without any agreement","Allowing the buyer to withdraw without penalty","Retaining the earnest money as liquidated damages"],c:1,e:"The seller's remedies for buyer default are: (1) retain earnest money as liquidated damages if the contract so provides, (2) allow the buyer to withdraw without penalty, or (3) sue for actual damages or specific performance. The seller cannot unilaterally impose penalties beyond what the contract specifies."},{q:"Specific performance as a remedy in a real estate contract means:",o:["The buyer must accept the property in as-is condition","The parties must go to binding arbitration before suing","The seller must fix all defects before closing","A court orders the breaching party to fulfill the actual terms of the contract"],c:3,e:"Specific performance is a court order compelling a party to perform the exact terms of the contract. It is unique to real estate because each parcel is considered unique — money damages may be inadequate. Either the buyer or seller can sue for specific performance if the other breaches."},{q:"Mediation differs from arbitration in a real estate dispute in that:",o:["Mediation is required by Arizona law; arbitration is optional","Mediation results in a legally binding decision; arbitration does not","In mediation a neutral mediator helps parties reach their own resolution; in arbitration the arbitrator imposes a binding decision","Arbitration is non-binding and either party can reject the outcome"],c:2,e:"In mediation, a neutral third-party mediator facilitates discussion but does NOT impose a decision — the parties resolve the dispute themselves. In arbitration, a neutral arbitrator hears both sides and IMPOSES a binding decision that the parties agreed in advance to accept with no further court recourse."},{q:"An 'as-is' clause in an Arizona purchase contract means:",o:["The seller will not make repairs, but still must disclose all known adverse material facts","The seller warrants the property is in perfect condition","The seller has no obligation to disclose any known defects","The buyer waives all inspection rights"],c:0,e:"An 'as-is' provision means the seller will not repair defects, but it does NOT relieve the seller or agent of the duty to disclose known adverse material facts. Arizona law requires disclosure of all known material defects regardless of an as-is clause."},{q:"The legal concept of 'caveat emptor' applies to which type of property defects?",o:["Structural defects only","All defects whether visible or hidden","Obvious (patent) defects that the buyer can observe during inspection","Hidden (latent) defects the seller knows about"],c:2,e:"Caveat emptor ('let the buyer beware') applies to obvious (patent) defects that are visible and detectable during a reasonable inspection. The buyer is responsible for observing and asking about obvious conditions. For hidden (latent) defects, the seller and seller's agent must disclose what they know."},{q:"A buyer broker agreement establishes what type of relationship?",o:["An exclusive fiduciary relationship between the buyer and the broker, outlining compensation","An open relationship where the buyer can work with multiple brokers simultaneously","A transaction brokerage where the broker represents neither party","A dual agency where the broker represents both buyer and seller"],c:0,e:"A buyer broker agreement is a written employment contract in which the buyer hires a broker as their exclusive fiduciary agent. It outlines the scope of services, duration, and the compensation the buyer owes the broker. It creates a formal exclusive agency relationship."},{q:"Wire fraud in real estate transactions typically occurs when:",o:["A seller misrepresents the property condition in the listing","A hacker intercepts email communications and sends fraudulent wiring instructions directing funds to the hacker's account","A buyer pays earnest money with a personal check that bounces","An agent embezzles funds from the broker's trust account"],c:1,e:"Wire fraud in real estate occurs when a criminal hacks or spoofs email communications and sends fraudulent wire transfer instructions — directing the buyer's closing funds to the hacker's account instead of the legitimate escrow or title company. Licensees must warn clients to always verify wiring instructions by phone."},{q:"In Arizona, a broker CANNOT file a lien for unpaid commissions on which type of property?",o:["Commercial rental properties","A seller's residential property","Industrial properties","Vacant commercial land"],c:1,e:"Under Arizona law, a broker cannot file a lien for unpaid commissions on a SELLER'S residential property. However, Arizona does allow a commission lien on commercial lease transactions (on the lessor's property). The broker's remedy for unpaid residential commissions is to sue in court."},{q:"Under ARS 44-5101 governing assignment of 1-4 unit residential contracts, a wholesale buyer must disclose their status to the seller because:",o:["The MLS requires disclosure of all assignments","Arizona requires all buyers to disclose their occupation","Wholesale buyers must obtain ADRE approval before assigning contracts","If the wholesale buyer fails to disclose, the seller may rescind the contract and retain the buyer's earnest money"],c:3,e:"ARS 44-5101 protects sellers in assignment transactions. If a wholesale buyer (one intending to assign the contract) fails to disclose their status to the seller, the seller may rescind the contract without penalty AND retain the buyer's earnest money as a remedy for the non-disclosure."}];
 </script>
 </body>
 </html>

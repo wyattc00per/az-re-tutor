@@ -391,12 +391,12 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
     <div class="pt-start-card">
       <div style="font-size:2rem;margin-bottom:10px">🏆</div>
       <h2>Full Practice Exam</h2>
-      <p>Simulates the AZ real estate state exam — 100 questions from all 11 topics, with immediate answer feedback.</p>
+      <p>Mirrors the real AZ PSI licensing exam — 140 questions across all 11 topics, timed at 3 hours. Score 75% (105/140) to pass.</p>
       <div class="pt-start-badges">
-        <span class="pt-start-badge">⏱ 90-minute timer</span>
-        <span class="pt-start-badge">100 questions</span>
+        <span class="pt-start-badge">⏱ 3-hour timer</span>
+        <span class="pt-start-badge">140 questions</span>
         <span class="pt-start-badge">All 11 topics</span>
-        <span class="pt-start-badge">75% to pass</span>
+        <span class="pt-start-badge">75% to pass (105/140)</span>
       </div>
       <button class="pt-start-btn" onclick="startPracticeTest()">Start Practice Exam →</button>
       <div class="pt-history" id="pt-history"></div>
@@ -959,7 +959,7 @@ function loadVocab(t){
 var PT = {
   questions: [], idx: 0, correct: 0, wrong: 0,
   topicResults: {}, startTime: null, timerInterval: null,
-  totalSecs: 90 * 60
+  totalSecs: 180 * 60
 };
 
 function startPracticeTest() {
@@ -968,11 +968,11 @@ function startPracticeTest() {
   var pool = [];
   var tids = Object.keys(QBANK);
   // Weight toward weak topics: VI=40%, IX=56%, X=67% scored → more questions
-  // Strong topics: I=100%, VIII=100% → fewer questions. Total = 100
+  // Strong topics: I=100%, VIII=100% → fewer questions. Total = 140 (matches PSI exam)
   var weights = {
-    'VI': 14, 'IX': 13, 'X': 12, 'IV': 10,
-    'II': 9, 'VII': 9, 'XI': 9,
-    'VIII': 8, 'III': 7, 'V': 6, 'I': 3
+    'VI': 20, 'IX': 18, 'X': 17, 'IV': 14,
+    'II': 13, 'VII': 13, 'XI': 12,
+    'VIII': 12, 'III': 10, 'V': 8, 'I': 3
   };
   tids.forEach(function(tid, ti) {
     var qs = QBANK[tid].slice();
@@ -992,7 +992,7 @@ function startPracticeTest() {
     var j = Math.floor(Math.random()*(i+1));
     var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
   }
-  PT.questions = pool.slice(0, 100);
+  PT.questions = pool.slice(0, 140);
   PT.startTime = Date.now();
   document.getElementById('pt-start-wrap').style.display = 'none';
   var tw = document.getElementById('pt-test-wrap');

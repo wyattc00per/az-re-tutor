@@ -390,13 +390,13 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
   <div class="pt-start-wrap" id="pt-start-wrap">
     <div class="pt-start-card">
       <div style="font-size:2rem;margin-bottom:10px">🏆</div>
-      <h2>Full Practice Exam</h2>
-      <p>Mirrors the real AZ PSI licensing exam — 140 questions across all 11 topics, timed at 3 hours. Score 75% (105/140) to pass.</p>
+      <h2>National Final Exam</h2>
+      <p>Matches the national portion of the PSI licensing exam — 80 questions, 105 minutes. Score 75% (60/80) to pass.</p>
       <div class="pt-start-badges">
-        <span class="pt-start-badge">⏱ 3-hour timer</span>
-        <span class="pt-start-badge">140 questions</span>
+        <span class="pt-start-badge">⏱ 105-minute timer</span>
+        <span class="pt-start-badge">80 questions</span>
         <span class="pt-start-badge">All 11 topics</span>
-        <span class="pt-start-badge">75% to pass (105/140)</span>
+        <span class="pt-start-badge">75% to pass (60/80)</span>
       </div>
       <button class="pt-start-btn" onclick="startPracticeTest()">Start Practice Exam →</button>
       <div class="pt-history" id="pt-history"></div>
@@ -959,7 +959,7 @@ function loadVocab(t){
 var PT = {
   questions: [], idx: 0, correct: 0, wrong: 0,
   topicResults: {}, startTime: null, timerInterval: null,
-  totalSecs: 180 * 60
+  totalSecs: 105 * 60
 };
 
 function startPracticeTest() {
@@ -968,11 +968,11 @@ function startPracticeTest() {
   var pool = [];
   var tids = Object.keys(QBANK);
   // Weight toward weak topics: VI=40%, IX=56%, X=67% scored → more questions
-  // Strong topics: I=100%, VIII=100% → fewer questions. Total = 140 (matches PSI exam)
+  // Strong topics: I=100%, VIII=100% → fewer questions. Total = 80 (PSI national exam)
   var weights = {
-    'VI': 20, 'IX': 18, 'X': 17, 'IV': 14,
-    'II': 13, 'VII': 13, 'XI': 12,
-    'VIII': 12, 'III': 10, 'V': 8, 'I': 3
+    'VI': 11, 'IX': 10, 'X': 10, 'IV': 8,
+    'II': 7, 'VII': 7, 'XI': 7,
+    'VIII': 7, 'III': 6, 'V': 5, 'I': 2
   };
   tids.forEach(function(tid, ti) {
     var qs = QBANK[tid].slice();
@@ -992,7 +992,7 @@ function startPracticeTest() {
     var j = Math.floor(Math.random()*(i+1));
     var t = pool[i]; pool[i] = pool[j]; pool[j] = t;
   }
-  PT.questions = pool.slice(0, 140);
+  PT.questions = pool.slice(0, 80);
   PT.startTime = Date.now();
   document.getElementById('pt-start-wrap').style.display = 'none';
   var tw = document.getElementById('pt-test-wrap');

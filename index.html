@@ -1283,16 +1283,33 @@ function renderVQ(){
   var answer = VQ.mode === 'td' ? item.d : item.t;
   var ptype  = VQ.mode === 'td' ? 'definition' : 'term';
 
-  // Build 3 wrong choices from pool, avoiding correct answer
+  // Build 3 wrong choices: prefer similar-length options so answers aren't obvious
   var wrongs = [];
   var tried = {};
   tried[VQ.idx] = true;
+  var ansLen = answer.length;
+
+  // Collect all candidates with similar length (55%–180% of correct answer length)
+  var candidates = [];
+  for(var j=0; j<VQUIZ.length; j++){
+    if(tried[j]) continue;
+    var cw = VQ.mode==='td' ? VQUIZ[j].d : VQUIZ[j].t;
+    if(cw === answer) continue;
+    var ratio = ansLen > 0 ? cw.length/ansLen : 1;
+    if(ratio >= 0.55 && ratio <= 1.8) candidates.push({i:j, w:cw});
+  }
+  shuffleArr(candidates);
+  for(var c=0; c<candidates.length && wrongs.length<3; c++){
+    tried[candidates[c].i] = true;
+    wrongs.push(candidates[c].w);
+  }
+  // Fallback: fill remaining slots from any unused entry
   while(wrongs.length < 3){
     var ri = Math.floor(Math.random()*VQUIZ.length);
     if(tried[ri]) continue;
     tried[ri] = true;
-    var w = VQ.mode === 'td' ? VQUIZ[ri].d : VQUIZ[ri].t;
-    if(w !== answer) wrongs.push(w);
+    var fw = VQ.mode==='td' ? VQUIZ[ri].d : VQUIZ[ri].t;
+    if(fw !== answer) wrongs.push(fw);
   }
 
   // Insert correct answer at random position

@@ -391,12 +391,12 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
     <div class="pt-start-card">
       <div style="font-size:2rem;margin-bottom:10px">🏆</div>
       <h2>National Final Exam</h2>
-      <p>Matches the national portion of the PSI licensing exam — 80 questions, 105 minutes. Score 75% (60/80) to pass.</p>
+      <p>Matches the national portion of the Pearson State Exam simulation — 60 questions, 120 minutes. Score 75% (45/60) to pass.</p>
       <div class="pt-start-badges">
         <span class="pt-start-badge">⏱ 105-minute timer</span>
-        <span class="pt-start-badge">80 questions</span>
+        <span class="pt-start-badge">60 questions</span>
         <span class="pt-start-badge">All 11 topics</span>
-        <span class="pt-start-badge">75% to pass (60/80)</span>
+        <span class="pt-start-badge">75% to pass (45/60)</span>
       </div>
       <button class="pt-start-btn" onclick="startPracticeTest()">Start Practice Exam →</button>
       <div class="pt-history" id="pt-history"></div>
@@ -1389,7 +1389,7 @@ function loadVocab(t){
 var PT = {
   questions: [], idx: 0, correct: 0, wrong: 0,
   topicResults: {}, startTime: null, timerInterval: null,
-  totalSecs: 105 * 60
+  totalSecs: 120 * 60
 };
 
 function startPracticeTest() {
@@ -1402,10 +1402,10 @@ function startPracticeTest() {
   // Untested (scored well, skipped): III, V, VIII, XI → fewer questions
   // Strong: IV=100%, II=100% → fewest questions. Total = 80
   var weights = {
-    'VI': 15, 'VII': 14, 'I': 12,
-    'IX': 9,  'X': 9,   'XI': 5,
-    'VIII': 5, 'V': 5,  'III': 2,
-    'II': 2,  'IV': 2
+    'VI': 12, 'VII': 11, 'I': 9,
+    'IX': 7,  'X': 7,   'XI': 3,
+    'VIII': 3, 'V': 3,  'III': 2,
+    'II': 2,  'IV': 1
   };
   tids.forEach(function(tid, ti) {
     var qs = QBANK[tid].slice();

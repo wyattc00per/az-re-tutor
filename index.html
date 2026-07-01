@@ -1283,25 +1283,43 @@ function renderVQ(){
   var answer = VQ.mode === 'td' ? item.d : item.t;
   var ptype  = VQ.mode === 'td' ? 'definition' : 'term';
 
-  // Build 3 wrong choices: prefer similar-length options so answers aren't obvious
+  // Build 3 topically-relevant wrong choices using definition-based semantic matching
   var wrongs = [];
   var tried = {};
   tried[VQ.idx] = true;
   var ansLen = answer.length;
 
-  // Collect all candidates with similar length (55%–180% of correct answer length)
+  // Extract meaningful keywords from a string (filter stopwords)
+  function vqWords(str){
+    var stop = {the:1,and:1,for:1,are:1,but:1,not:1,all:1,can:1,has:1,its:1,may:1,than:1,that:1,this:1,with:1,from:1,they:1,will:1,been:1,have:1,when:1,what:1,which:1,their:1,would:1,there:1,each:1,both:1,more:1,also:1,such:1,used:1,into:1,must:1,upon:1,under:1,after:1,before:1,about:1,through:1,between:1,property:1,real:1,estate:1,arizona:1,agent:1,broker:1,buyer:1,seller:1,owner:1,person:1,another:1,where:1,does:1,made:1,only:1,same:1,some:1,often:1,usually:1,without:1,refers:1,known:1,called:1,means:1,type:1,form:1,based:1,legal:1,contract:1,party:1,parties:1,right:1,rights:1,given:1,make:1,provides:1,allows:1,requires:1,include:1,certain:1,specific:1,general:1,typically:1};
+    return str.toLowerCase().split(/\W+/).filter(function(w){ return w.length>3 && !stop[w]; });
+  }
+
+  // Score each candidate by how many definition keywords overlap with current item's definition
+  var refWords = {};
+  vqWords(item.d).forEach(function(w){ refWords[w] = (refWords[w]||0) + 1; });
+
   var candidates = [];
   for(var j=0; j<VQUIZ.length; j++){
     if(tried[j]) continue;
     var cw = VQ.mode==='td' ? VQUIZ[j].d : VQUIZ[j].t;
     if(cw === answer) continue;
+    // Semantic relevance: compare candidate's definition against current item's definition
+    var rel = 0;
+    vqWords(VQUIZ[j].d).forEach(function(w){ if(refWords[w]) rel++; });
+    // Length similarity bonus (so choices look comparable on screen)
     var ratio = ansLen > 0 ? cw.length/ansLen : 1;
-    if(ratio >= 0.55 && ratio <= 1.8) candidates.push({i:j, w:cw});
+    var lenBonus = (ratio >= 0.5 && ratio <= 2.0) ? 1 : 0;
+    candidates.push({i:j, w:cw, score: rel*2 + lenBonus});
   }
-  shuffleArr(candidates);
-  for(var c=0; c<candidates.length && wrongs.length<3; c++){
-    tried[candidates[c].i] = true;
-    wrongs.push(candidates[c].w);
+
+  // Sort by relevance, take top 18, shuffle within that pool, pick 3
+  candidates.sort(function(a,b){ return b.score - a.score; });
+  var pool = candidates.slice(0, 18);
+  shuffleArr(pool);
+  for(var c=0; c<pool.length && wrongs.length<3; c++){
+    tried[pool[c].i] = true;
+    wrongs.push(pool[c].w);
   }
   // Fallback: fill remaining slots from any unused entry
   while(wrongs.length < 3){

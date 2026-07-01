@@ -442,6 +442,7 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
     <button class="start-btn" onclick="startVQ('dt')" style="flex:1;min-width:180px">🔍 Definition → Term<br><small style="font-weight:400;opacity:.8">See the definition, pick the term</small></button>
   </div>
   <div id="vqSession" style="display:none"></div>
+  <div class="pt-history" id="vq-history"></div>
   <hr style="border-color:var(--border);margin:18px 0">
   <h3 style="color:var(--gold);margin-bottom:10px">Browse by Topic</h3>
   <div class="pick-grid" id="vocabGrid"></div>
@@ -490,6 +491,7 @@ function nav(page){
   document.getElementById("nt-"+page).classList.add("on");
   if(page==='practice') renderPTHistory();
   if(page==='contracts') renderCWHistory();
+  if(page==='vocab') renderVQHistory();
   if(page!=='vocab'){ var vqs=document.getElementById('vqSession'); if(vqs) vqs.style.display='none'; }
 }
 
@@ -1266,6 +1268,11 @@ function renderVQ(){
     // Results screen
     var pct = Math.round(VQ.correct / VQ.q.length * 100);
     var grade = pct >= 90 ? '🏆 Excellent!' : pct >= 75 ? '✅ Good work!' : pct >= 60 ? '📚 Keep studying' : '💪 More practice needed';
+    // Save to history
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    saveVQHistory({pct:pct,correct:VQ.correct,total:VQ.q.length,mode:VQ.mode,date:dateStr});
+    renderVQHistory();
     el.innerHTML = '<div style="text-align:center;padding:30px 20px">'
       +'<div style="font-size:3rem;margin-bottom:10px">' + (pct>=75?'🎉':'📖') + '</div>'
       +'<div style="font-size:2rem;font-weight:700;color:var(--gold)">' + pct + '%</div>'
@@ -1538,6 +1545,28 @@ function answerPT(chosen) {
 
 function nextPQ() { PT.idx++; renderPQ(); }
 
+function getVQHistory(){try{return JSON.parse(localStorage.getItem('vqHistory'))||[];}catch(e){return[];}}
+function saveVQHistory(entry){try{var h=getVQHistory();h.unshift(entry);if(h.length>20)h=h.slice(0,20);localStorage.setItem('vqHistory',JSON.stringify(h));}catch(e){}}
+function clearVQHistory(){try{localStorage.removeItem('vqHistory');}catch(e){}renderVQHistory();}
+function renderVQHistory(){
+  var el=document.getElementById('vq-history');
+  if(!el)return;
+  var h=getVQHistory();
+  if(!h.length){el.innerHTML='';return;}
+  var rows=h.map(function(r){
+    var cls=r.pct>=75?'pass':'fail';
+    var label=r.pct>=75?'PASS':'FAIL';
+    var modeLabel=r.mode==='td'?'Term→Def':'Def→Term';
+    return '<div class="pt-hist-row">'+
+      '<span class="pt-hist-date">'+r.date+'</span>'+
+      '<span style="color:var(--text2);font-size:.75rem">'+modeLabel+'</span>'+
+      '<span class="pt-hist-score">'+r.pct+'%</span>'+
+      '<span class="pt-hist-badge '+cls+'">'+label+'</span>'+
+      '<span style="color:var(--text2);font-size:.75rem">'+r.correct+'/'+r.total+'</span>'+
+    '</div>';
+  }).join('');
+  el.innerHTML='<div class="pt-history-head"><span>Score History</span><button class="pt-history-clear" onclick="clearVQHistory()">Clear</button></div>'+rows;
+}
 function getPTHistory(){try{return JSON.parse(localStorage.getItem('ptHistory'))||[];}catch(e){return[];}}
 function savePTHistory(entry){try{var h=getPTHistory();h.unshift(entry);if(h.length>20)h=h.slice(0,20);localStorage.setItem('ptHistory',JSON.stringify(h));}catch(e){}}
 function clearPTHistory(){try{localStorage.removeItem('ptHistory');}catch(e){}renderPTHistory();}

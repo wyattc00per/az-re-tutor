@@ -1272,7 +1272,7 @@ function renderVQ(){
       +'<div style="color:var(--sub);margin-bottom:24px">' + VQ.correct + ' / ' + VQ.q.length + ' correct</div>'
       +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
       +'<button class="start-btn" onclick="startVQ(VQ.mode)" style="min-width:140px">🔄 New Round</button>'
-      +'<button class="start-btn" onclick="startVQ(VQ.mode==='td'?'dt':'td')" style="min-width:140px;background:var(--bg2)">'
+      +'<button class="start-btn" onclick="switchVQMode()" style="min-width:140px;background:var(--bg2)">'
         +(VQ.mode==='td'?'🔍 Switch to Def→Term':'📖 Switch to Term→Def')+'</button>'
       +'</div></div>';
     return;
@@ -1364,6 +1364,10 @@ function nextVQ(){
   VQ.idx++;
   VQ.answered = false;
   renderVQ();
+}
+
+function switchVQMode(){
+  startVQ(VQ.mode === 'td' ? 'dt' : 'td');
 }
 
 function loadVocab(t){

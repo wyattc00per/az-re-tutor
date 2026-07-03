@@ -1303,17 +1303,27 @@ function renderVQ(){
     var dateStr = now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
     saveVQHistory({pct:pct,correct:VQ.correct,total:VQ.q.length,mode:VQ.mode,date:dateStr});
     renderVQHistory();
+    var _wmap = getVQWrong();
+    var _wct = Object.keys(_wmap).length;
+    var _badge = '';
+    if(_wct > 0){
+      _badge = '<div style="margin-top:14px;font-size:.8rem;color:var(--text2)">&#x1F4CC; ';
+      _badge += _wct + ' term' + (_wct===1?'':'s');
+      _badge += ' marked for extra practice — they will appear more often next round.';
+      _badge += ' <button onclick="clearVQWrong();document.getElementById(\'vqWrongBadge\').style.display=\'none\'"';
+      _badge += ' style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline">Clear</button></div>';
+    }
     el.innerHTML = '<div style="text-align:center;padding:30px 20px">'
       +'<div style="font-size:3rem;margin-bottom:10px">' + (pct>=75?'🎉':'📖') + '</div>'
       +'<div style="font-size:2rem;font-weight:700;color:var(--gold)">' + pct + '%</div>'
       +'<div style="font-size:1.1rem;margin:8px 0 4px;color:var(--text)">' + grade + '</div>'
       +'<div style="color:var(--sub);margin-bottom:24px">' + VQ.correct + ' / ' + VQ.q.length + ' correct</div>'
       +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
-      +'<button class="start-btn" onclick="startVQ(VQ.mode)" style="min-width:140px">🔄 New Round</button>'
+      +'<button class="start-btn" onclick="startVQ(VQ.mode)" style="min-width:140px">&#x1F504; New Round</button>'
       +'<button class="start-btn" onclick="switchVQMode()" style="min-width:140px;background:var(--bg2)">'
-        +(VQ.mode==='td'?'🔍 Switch to Def→Term':'📖 Switch to Term→Def')+'</button>'
+        +(VQ.mode==='td'?'Switch to Def&#x2192;Term':'Switch to Term&#x2192;Def')+'</button>'
       +'</div>'
-      +(function(){var w=getVQWrong();var n=Object.keys(w).length;return n>0?'<div style="margin-top:14px;font-size:.8rem;color:var(--text2)">📌 '+n+' term'+(n===1?'':'s')+' marked for extra practice — they will appear more often in future rounds. <button onclick="clearVQWrong();this.parentNode.style.display=\'none\'" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline">Clear</button></div>':'';})()\
+      +'<div id="vqWrongBadge">' + _badge + '</div>'
       +'</div>';
     return;
   }

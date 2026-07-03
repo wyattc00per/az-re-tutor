@@ -1313,7 +1313,8 @@ function renderVQ(){
       +'<button class="start-btn" onclick="switchVQMode()" style="min-width:140px;background:var(--bg2)">'
         +(VQ.mode==='td'?'🔍 Switch to Def→Term':'📖 Switch to Term→Def')+'</button>'
       +'</div>'
-      +(function(){var w=getVQWrong();var n=Object.keys(w).length;return n>0?'<div style="margin-top:14px;font-size:.8rem;color:var(--text2)">📌 '+n+' term'+(n===1?'':'s')+' marked for extra practice — they'll appear more often in future rounds. <button onclick="clearVQWrong();this.parentNode.style.display='none'" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline">Clear</button></div>':'';})()      +'</div>';
+      +(function(){var w=getVQWrong();var n=Object.keys(w).length;return n>0?'<div style="margin-top:14px;font-size:.8rem;color:var(--text2)">📌 '+n+' term'+(n===1?'':'s')+' marked for extra practice — they will appear more often in future rounds. <button onclick="clearVQWrong();this.parentNode.style.display=\'none\'" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.8rem;text-decoration:underline">Clear</button></div>':'';})()\
+      +'</div>';
     return;
   }
   var item = VQ.q[VQ.idx];

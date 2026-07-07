@@ -300,18 +300,20 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
 <body>
 
 <nav>
-  <div class="logo">📋 AZ RE Tutor</div>
+<div class="logo">📋 AZ RE Tutor</div>
   <button class="ntab on" onclick="nav('home')" id="nt-home">🏠 <span class="lbl">Home</span></button>
   <button class="ntab" onclick="nav('quiz')" id="nt-quiz">🎯 <span class="lbl">Quiz Me</span></button>
   <button class="ntab" onclick="nav('study')" id="nt-study">📖 <span class="lbl">Study Guide</span></button>
   <button class="ntab" onclick="nav('vocab')" id="nt-vocab">📝 <span class="lbl">Vocabulary</span></button>
   <button class="ntab" onclick="nav('practice')" id="nt-practice">🏆 <span class="lbl">Practice Test</span></button>
-  <button class="ntab" onclick="nav('contracts')" id="nt-contracts">📋 <span class="lbl">Contracts</span></button>
+  <div id="nt-weaktest" class="ntab" onclick="nav('weaktest');renderWTHistory('wt-history')" style="cursor:pointer">&#x26A1; Weak Areas</div>
+<button class="ntab" onclick="nav('contracts')" id="nt-contracts">📋 <span class="lbl">Contracts</span></button>
   <div class="nav-r">
     <span class="spill" id="streakSpill" style="display:none">🔥 <span id="streakN">0</span></span>
     <span class="spill" id="scoreSpill">65% need 75%</span>
   </div>
-<div id="nt-weaktest" onclick="nav('weaktest')" style="cursor:pointer">&#x26A1; Weak Areas</div>
+
+
 </nav>
 
 <!-- HOME -->
@@ -385,7 +387,7 @@ nav{position:fixed;top:0;left:0;right:0;height:54px;background:var(--white);bord
     <div class="pt-qbody" id="cw-qbody"></div>
   </div>
 </div>
-<div id="panel-weaktest" style="display:none"><div id="wt-start-wrap"><div class="pt-start-card" style="max-width:520px;margin:2rem auto"><div><h2 style="font-size:1.5rem;margin-bottom:.5rem">&#x26A1; Weak Areas &#8212; Practice Test 2</h2><p style="color:#a0a4b8;margin-bottom:1.2rem">100 targeted questions. 20 per session; wrong answers appear more often.</p></div><div class="pt-start-badges"><span class="pt-start-badge">&#x23F1; 45 min</span><span class="pt-start-badge">20 questions</span><span class="pt-start-badge">Weighted rotation</span><span class="pt-start-badge">75% to pass</span></div><button class="pt-start-btn" onclick="startWT()">Start Weak Areas Exam &#x2192;</button></div><div id="wt-history" class="pt-history"></div></div><div id="wt-test-wrap" style="display:none"><div class="pt-header"><span id="wt-timer" class="pt-timer">45:00</span><span id="wt-qnum" class="pt-qnum">0 / 20</span><span id="wt-score-live" class="pt-score-live">0 correct</span></div><div class="pt-progress"><div id="wt-progress-bar" class="pt-progress-bar" style="width:0%"></div></div><div id="wt-qbody"></div></div></div>
+<div id="panel-weaktest" class="panel"><div id="wt-start-wrap"><div class="pt-start-card" style="max-width:520px;margin:2rem auto"><div><h2 style="font-size:1.5rem;margin-bottom:.5rem">&#x26A1; Weak Areas &#8212; Practice Test 2</h2><p style="color:#a0a4b8;margin-bottom:1.2rem">100 targeted questions. 20 per session; wrong answers appear more often.</p></div><div class="pt-start-badges"><span class="pt-start-badge">&#x23F1; 45 min</span><span class="pt-start-badge">20 questions</span><span class="pt-start-badge">Weighted rotation</span><span class="pt-start-badge">75% to pass</span></div><button class="pt-start-btn" onclick="startWT()">Start Weak Areas Exam &#x2192;</button></div><div id="wt-history" class="pt-history"></div></div><div id="wt-test-wrap" style="display:none"><div class="pt-header"><span id="wt-timer" class="pt-timer">45:00</span><span id="wt-qnum" class="pt-qnum">0 / 20</span><span id="wt-score-live" class="pt-score-live">0 correct</span></div><div class="pt-progress"><div id="wt-progress-bar" class="pt-progress-bar" style="width:0%"></div></div><div id="wt-qbody"></div></div></div>
 
 <!-- PRACTICE TEST -->
 <div class="panel" id="panel-practice">

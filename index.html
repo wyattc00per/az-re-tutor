@@ -73,6 +73,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .opt-btn.wrong .opt-lbl{color:var(--red);}
 .test-explain{background:#f8fafc;border:1px solid var(--border);border-left:4px solid var(--blue);border-radius:8px;padding:14px;font-size:.87rem;line-height:1.5;margin-top:12px;display:none;}
 .test-explain.show{display:block;}
+.cw-scenario{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:.87rem;line-height:1.6;margin-bottom:14px;color:#374151;}
 .test-actions{display:flex;gap:10px;margin-top:16px;}
 .btn{padding:11px 24px;border-radius:8px;border:none;font-size:.9rem;font-weight:600;cursor:pointer;transition:var(--tr);}
 .btn-primary{background:var(--blue);color:#fff;}
@@ -276,13 +277,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 <!-- ══════════ CONTRACTS ══════════ -->
 <div class="panel" id="panel-contracts">
-  <div class="cw-wrap">
-    <h2>✍️ Contracts Practice</h2>
-    <p class="cw-sub">Multiple-choice scenarios covering Arizona purchase contracts. Read each situation and pick the best answer.</p>
-    <div id="cw-content"></div>
-    <div class="cw-history-section">
-      <div style="font-weight:700;margin-bottom:10px;">Recent Sessions</div>
-      <div id="cw-history"></div>
+  <div class="test-wrap">
+    <div class="test-header">
+      <span class="test-prog" id="cw-prog">Question 1 of 10</span>
+      <span class="test-score" id="cw-score">Score: 0/0</span>
+    </div>
+    <div class="tprogbar"><div class="tprogbar-inner" id="cw-progbar" style="width:0%"></div></div>
+    <div class="test-qcard">
+      <div class="test-topic" id="cw-topic"></div>
+      <div class="cw-scenario" id="cw-scenario"></div>
+      <div class="test-q" id="cw-q"></div>
+      <div class="test-opts" id="cw-opts"></div>
+      <div class="test-explain" id="cw-explain"></div>
+    </div>
+    <div class="test-actions">
+      <button class="btn btn-primary" id="cw-next-btn" onclick="cwNext()" disabled>Next</button>
+      <button class="btn btn-secondary" onclick="nav('home')">Quit</button>
     </div>
   </div>
 </div>
@@ -952,51 +962,59 @@ var CW = { current: 0, correct: 0, answered: false };
 function renderContracts() {
   CW.current = 0; CW.correct = 0; CW.answered = false;
   cwShow();
-  renderCWHistory();
 }
 
 function cwShow() {
   var cq = CW_QUESTIONS[CW.current];
-  var prog = (CW.current + 1) + ' / ' + CW_QUESTIONS.length;
-  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
-    + '<span style="font-size:.85rem;color:var(--muted);">Question ' + prog + '</span>'
-    + '<span style="font-size:.85rem;font-weight:600;color:var(--blue);">Score: ' + CW.correct + '/' + CW.current + '</span>'
-    + '</div>'
-    + '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;font-size:.88rem;line-height:1.6;">'
-    + '<strong>📋 Scenario:</strong><br>' + cq.scenario + '</div>'
-    + '<div style="font-weight:600;margin-bottom:12px;font-size:.95rem;">' + cq.q + '</div>'
-    + '<div class="q-opts" id="cw-opts">';
+  var n = CW.current + 1;
+  var total = CW_QUESTIONS.length;
+  document.getElementById('cw-prog').textContent = 'Question ' + n + ' of ' + total;
+  document.getElementById('cw-score').textContent = 'Score: ' + CW.correct + '/' + CW.current;
+  document.getElementById('cw-progbar').style.width = ((n-1)/total*100) + '%';
+  document.getElementById('cw-topic').textContent = '📋 ' + cq.topic;
+  document.getElementById('cw-scenario').textContent = cq.scenario;
+  document.getElementById('cw-q').textContent = cq.q;
+  var opts = document.getElementById('cw-opts');
+  opts.innerHTML = '';
+  var labels = ['A','B','C','D'];
   cq.o.forEach(function(opt, i) {
-    html += '<button class="q-opt" onclick="cwSelect(' + i + ')">' + opt + '</button>';
+    var btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = '<span class="opt-lbl">' + labels[i] + '</span><span>' + opt + '</span>';
+    btn.onclick = function() { cwSelect(i); };
+    opts.appendChild(btn);
   });
-  html += '</div>'
-    + '<div class="te-explain" id="cw-explain" style="display:none;"></div>'
-    + '<div style="text-align:right;margin-top:14px;">'
-    + '<button class="btn btn-primary" id="cw-next-btn" style="display:none;" onclick="cwNext()">Next →</button>'
-    + '</div>';
-  document.getElementById('cw-content').innerHTML = html;
+  var exp = document.getElementById('cw-explain');
+  exp.className = 'test-explain';
+  exp.textContent = '';
+  var nextBtn = document.getElementById('cw-next-btn');
+  nextBtn.disabled = true;
+  nextBtn.textContent = CW.current < CW_QUESTIONS.length - 1 ? 'Next' : 'Finish';
   CW.answered = false;
+  window.scrollTo(0, 0);
 }
 
 function cwSelect(idx) {
   if (CW.answered) return;
   CW.answered = true;
   var cq = CW_QUESTIONS[CW.current];
-  var opts = document.querySelectorAll('#cw-opts .q-opt');
-  opts.forEach(function(btn, i) {
-    btn.disabled = true;
-    if (i === cq.c) btn.classList.add('correct');
-    else if (i === idx) btn.classList.add('wrong');
+  var correct = (idx === cq.c);
+  if (correct) CW.correct++;
+  CW.current++;  // advance counter so score shows X/N answered
+  document.getElementById('cw-score').textContent = 'Score: ' + CW.correct + '/' + CW.current;
+  var btns = document.querySelectorAll('#cw-opts .opt-btn');
+  btns.forEach(function(b, i) {
+    b.disabled = true;
+    if (i === cq.c) b.classList.add('correct');
+    else if (i === idx && !correct) b.classList.add('wrong');
   });
-  if (idx === cq.c) CW.correct++;
-  var expl = document.getElementById('cw-explain');
-  expl.style.display = 'block';
-  expl.innerHTML = (idx === cq.c ? '✅ <strong>Correct!</strong> ' : '❌ <strong>Incorrect.</strong> ') + cq.e;
-  document.getElementById('cw-next-btn').style.display = 'inline-block';
+  var exp = document.getElementById('cw-explain');
+  exp.textContent = cq.e;
+  exp.classList.add('show');
+  document.getElementById('cw-next-btn').disabled = false;
 }
 
 function cwNext() {
-  CW.current++;
   if (CW.current >= CW_QUESTIONS.length) {
     cwFinish();
   } else {
@@ -1005,18 +1023,21 @@ function cwNext() {
 }
 
 function cwFinish() {
-  var pct = Math.round(CW.correct / CW_QUESTIONS.length * 100);
-  var color = pct >= 80 ? '#15803d' : pct >= 60 ? '#b45309' : '#b91c1c';
-  var bg    = pct >= 80 ? '#f0fdf4' : pct >= 60 ? '#fffbeb' : '#fef2f2';
-  var html = '<div style="text-align:center;padding:32px 16px;background:' + bg + ';border-radius:12px;border:1px solid ' + color + '20;">'
-    + '<div style="font-size:2.5rem;font-weight:800;color:' + color + ';">' + pct + '%</div>'
-    + '<div style="font-size:1.1rem;font-weight:600;margin-top:4px;">' + CW.correct + ' / ' + CW_QUESTIONS.length + ' correct</div>'
-    + '<p style="color:var(--muted);font-size:.88rem;margin-top:8px;">' + (pct >= 80 ? 'Great work on contracts!' : pct >= 60 ? 'Review the contract scenarios you missed.' : 'Keep studying Arizona purchase contract terms.') + '</p>'
-    + '<button class="btn btn-primary" style="margin-top:16px;" onclick="renderContracts()">Retry</button>'
+  var total = CW_QUESTIONS.length;
+  var pct = Math.round(CW.correct / total * 100);
+  saveCWHistory(CW.correct, total, new Date().toLocaleDateString());
+  // Reuse the result panel with a contracts-specific summary
+  var color = pct >= 80 ? 'var(--green)' : pct >= 60 ? '#b45309' : 'var(--red)';
+  var msg   = pct >= 80 ? 'Great work on contracts!' : pct >= 60 ? 'Review the scenarios you missed.' : 'Keep studying Arizona purchase contract terms.';
+  document.getElementById('rc-summary').innerHTML =
+    '<div style="text-align:center;padding:8px 0 20px;">'
+    + '<div style="font-size:3rem;font-weight:800;color:' + color + ';">' + pct + '%</div>'
+    + '<div style="font-size:1.1rem;font-weight:600;margin-top:4px;">' + CW.correct + ' / ' + total + ' correct</div>'
+    + '<div style="color:var(--muted);font-size:.88rem;margin-top:6px;">' + msg + '</div>'
     + '</div>';
-  document.getElementById('cw-content').innerHTML = html;
-  saveCWHistory(CW.correct, CW_QUESTIONS.length, new Date().toLocaleDateString());
-  renderCWHistory();
+  document.getElementById('rc-breakdown').innerHTML = '';
+  document.getElementById('rc-retake').onclick = function() { nav('contracts'); };
+  nav('result');
 }
 
 function saveCWHistory(correct, total, date) {

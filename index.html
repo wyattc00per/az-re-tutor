@@ -277,8 +277,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <!-- ══════════ CONTRACTS ══════════ -->
 <div class="panel" id="panel-contracts">
   <div class="cw-wrap">
-    <h2>✍️ Contract Writing Practice</h2>
-    <p class="cw-sub">Practice filling out key Arizona purchase contract sections. Type your answer and get instant feedback.</p>
+    <h2>✍️ Contracts Practice</h2>
+    <p class="cw-sub">Multiple-choice scenarios covering Arizona purchase contracts. Read each situation and pick the best answer.</p>
     <div id="cw-content"></div>
     <div class="cw-history-section">
       <div style="font-weight:700;margin-bottom:10px;">Recent Sessions</div>
@@ -866,96 +866,163 @@ function renderVocab() {
 // ═══════════════════════════════════════════════════════
 var CW_QUESTIONS = [
   {
-    id:'cw1', topic:'Purchase Price & Earnest Money',
-    scenario:'Buyer offers $385,000 for a single-family home. The buyer will deposit $5,000 earnest money within 3 days of contract acceptance.',
-    prompt:'What is the purchase price and earnest money amount?',
-    answer:'Purchase price: $385,000. Earnest money: $5,000.',
-    hint:'State both amounts clearly. Earnest money is typically 1-3% of the purchase price.'
+    topic:'Purchase Price & Earnest Money',
+    scenario:'A buyer offers $385,000 for a single-family home and will deposit $5,000 earnest money within 3 business days of contract acceptance.',
+    q:'Which line entry correctly reflects these contract terms?',
+    o:['Purchase price $350,000; earnest money $3,500','Purchase price $385,000; earnest money $5,000','Purchase price $385,000; earnest money $3,850','Purchase price $385,000; earnest money $7,700'],
+    c:1,
+    e:'Both figures must match the offer exactly. $5,000 earnest money is ~1.3% of the purchase price, a common deposit amount in Arizona.'
   },
   {
-    id:'cw2', topic:'Close of Escrow Date',
-    scenario:'The parties agree the transaction will close on August 15, 2025. The contract is signed on June 30, 2025.',
-    prompt:'Write the Close of Escrow (COE) clause. How many days from acceptance to closing?',
-    answer:'Close of Escrow: August 15, 2025 (approximately 46 days from contract date).',
-    hint:'Count the days between the contract date and the COE. In Arizona, "time is of the essence" for all contract deadlines.'
+    topic:'Close of Escrow — Day Count',
+    scenario:'A purchase contract is signed on June 30, 2025. The parties agree to close on August 15, 2025.',
+    q:'How many days from the contract date to the Close of Escrow (COE)?',
+    o:['30 days','40 days','46 days','60 days'],
+    c:2,
+    e:'June has 30 days, so June 30 → July 30 = 30 days; July 30 → Aug 15 = 16 more days = 46 days total. Arizona contracts treat time as of the essence for COE deadlines.'
   },
   {
-    id:'cw3', topic:'Financing Contingency',
-    scenario:'Buyer is obtaining a conventional loan at no more than 6.5% interest for 30 years, with a loan amount of $300,000.',
-    prompt:'Describe the key terms of the financing contingency clause.',
-    answer:'Financing contingency: Conventional loan, $300,000, 30 years, maximum interest rate 6.5%. Transaction is contingent on buyer obtaining this financing.',
-    hint:'Always include: loan type, amount, term, and maximum interest rate. The buyer is protected if unable to obtain these exact terms.'
+    topic:'Financing Contingency Terms',
+    scenario:'The buyer is obtaining a conventional loan of $300,000 at no more than 6.5% interest for 30 years.',
+    q:'Which set of financing terms should be entered in the contingency clause?',
+    o:['FHA loan, $300,000, 30 yrs, max 6.5%','Conventional, $300,000, 15 yrs, max 6.5%','Conventional, $300,000, 30 yrs, max 6.5%','Conventional, $320,000, 30 yrs, max 7.0%'],
+    c:2,
+    e:'All four elements — loan type, amount, term, and maximum interest rate — must match the buyer\'s actual loan terms. The contingency protects the buyer only if these exact terms cannot be obtained.'
   },
   {
-    id:'cw4', topic:'Inspection Period',
-    scenario:'The buyer wants a 10-day inspection period beginning from contract acceptance to conduct all due diligence inspections.',
-    prompt:'Write the inspection contingency clause.',
-    answer:'Buyer has 10 days from contract acceptance to conduct inspections and provide written notice of cancellation or request for repairs.',
-    hint:'The buyer must give written notice within the inspection period or the contingency is waived. The default AAR period is 10 days.'
+    topic:'Inspection Period',
+    scenario:'The buyer requests a standard inspection period beginning from the date of contract acceptance to conduct all due-diligence inspections.',
+    q:'What is the default AAR inspection period and what must the buyer do to exercise the contingency?',
+    o:['5 days; buyer must cancel verbally','10 days from acceptance; buyer must give written notice of cancellation or repair request','30 days; buyer must schedule a licensed inspector','10 days from listing date; no notice required'],
+    c:1,
+    e:'The AAR Residential Resale Contract default inspection period is 10 days from acceptance. The buyer must deliver written notice (BINSR or cancellation) within that window or the contingency is waived.'
   },
   {
-    id:'cw5', topic:'Personal Property Inclusions',
+    topic:'Personal Property Inclusions',
     scenario:'The seller agrees to include the refrigerator, washer, dryer, and all window coverings in the sale.',
-    prompt:'List these items in the inclusions section of the contract.',
-    answer:'Included personal property: refrigerator, washer, dryer, and all window coverings currently in place at the property.',
-    hint:'Be specific — include the brand/model if known and the location. "All window coverings" is sufficient if all are included.'
+    q:'How should these items be reflected in the contract?',
+    o:['List only the refrigerator; appliances are always included','Write "all appliances and contents"','List: refrigerator, washer, dryer, and all window coverings currently in place','Attach a separate bill of sale for each item'],
+    c:2,
+    e:'Inclusions must be specifically listed to be enforceable. "All appliances" is vague — naming each item avoids post-closing disputes.'
   },
   {
-    id:'cw6', topic:'Seller Concessions',
-    scenario:'The seller agrees to pay up to $8,000 toward the buyer\'s closing costs.',
-    prompt:'How would you write the seller concession clause?',
-    answer:'Seller agrees to contribute up to $8,000 toward buyer\'s closing costs, pre-paid items, and loan discount points.',
-    hint:'Lenders may limit seller concessions based on loan type (e.g., FHA allows up to 6%, conventional up to 3% with LTV over 90%).'
+    topic:'Seller Concessions',
+    scenario:'The seller agrees to pay up to $8,000 toward the buyer\'s closing costs. The buyer is using a conventional loan with an LTV over 90%.',
+    q:'Which concession clause is correctly written AND notes the lender cap?',
+    o:['Seller pays all closing costs up to $8,000 cash at closing','Seller contributes up to $8,000 toward buyer\'s closing costs, pre-paids, and discount points; note conventional lender cap of 3% with LTV > 90%','Seller reduces purchase price by $8,000 instead of paying concessions','Seller pays $8,000 directly to the title company after closing'],
+    c:1,
+    e:'Seller concessions must be documented in the contract. Conventional loans cap seller concessions at 3% of purchase price when LTV > 90%, so $8,000 on a $385,000 sale (2.1%) is within limits.'
+  },
+  {
+    topic:'Possession Date',
+    scenario:'The buyers want possession of the property at Close of Escrow, scheduled for September 1, 2025.',
+    q:'When do the buyers legally take possession under these terms?',
+    o:['The day before closing so they can move in','September 1, 2025 — the same day escrow closes','3 business days after closing','When the seller vacates, up to 30 days after COE'],
+    c:1,
+    e:'Possession at COE means the buyers receive keys and legal possession on the closing date itself, once funds are disbursed and title transfers.'
+  },
+  {
+    topic:'BINSR — Seller Response Options',
+    scenario:'After inspection, the buyer submits a BINSR requesting the seller repair a leaking roof and the HVAC system, estimated at $4,200.',
+    q:'What options does the seller have when responding to the BINSR?',
+    o:['The seller must complete all requested repairs','The seller must offer a credit equal to the repair estimate','The seller may agree to all repairs, some repairs, a credit, or refuse; the buyer may then cancel or accept','The seller has 24 hours to respond or the deal is automatically cancelled'],
+    c:2,
+    e:'Arizona\'s BINSR process gives the seller full flexibility to accept, partially accept, counter with a credit, or refuse. If the seller refuses, the buyer can cancel or waive and proceed as-is.'
+  },
+  {
+    topic:'Cash Offer — No Financing Contingency',
+    scenario:'A cash buyer submits an offer at $450,000 with no financing contingency.',
+    q:'What does the absence of a financing contingency mean for the buyer?',
+    o:['The buyer can still cancel if a loan falls through','The buyer must apply for a loan within 5 days of acceptance','The buyer has no loan-related contingency and must close with cash as agreed','The seller must provide seller financing if the buyer cannot pay cash'],
+    c:2,
+    e:'A cash offer contains no financing contingency. The buyer is contractually obligated to close with cash; inability to pay is not a valid basis for cancellation without forfeiting earnest money.'
+  },
+  {
+    topic:'Earnest Money Dispute',
+    scenario:'A buyer cancels a contract after the 10-day inspection period has expired without submitting a BINSR. The seller refuses to release the $6,000 earnest money.',
+    q:'What most likely happens to the earnest money?',
+    o:['It is automatically returned to the buyer within 3 days','It is split 50/50 between buyer and seller','It is forfeited to the seller as liquidated damages','The escrow company decides based on who filed first'],
+    c:2,
+    e:'Cancelling outside of a valid contingency period means the buyer has no contractual right to exit. The earnest money is forfeited to the seller as liquidated damages under the Arizona purchase contract.'
   }
 ];
 
-var cwCurrent = 0;
-var cwScore = 0;
+var CW = { current: 0, correct: 0, answered: false };
+
 function renderContracts() {
-  var html = '';
-  CW_QUESTIONS.forEach(function(cq, idx) {
-    html += '<div class="cw-step" id="cwstep-' + idx + '">'
-      + '<h3>' + (idx+1) + '. ' + cq.topic + '</h3>'
-      + '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.87rem;"><strong>Scenario:</strong> ' + cq.scenario + '</div>'
-      + '<div style="font-weight:600;margin-bottom:8px;font-size:.9rem;">' + cq.prompt + '</div>'
-      + '<textarea class="cw-input" rows="3" placeholder="Type your answer here..." id="cwinput-' + idx + '"></textarea>'
-      + '<div style="display:flex;gap:8px;margin-top:8px;">'
-      + '<button class="btn btn-primary" onclick="checkCW(' + idx + ')">Check Answer</button>'
-      + '<button class="btn btn-secondary" onclick="showHint(' + idx + ')">Hint</button>'
-      + '</div>'
-      + '<div class="cw-feedback" id="cwfb-' + idx + '"></div>'
-      + '</div>';
+  CW.current = 0; CW.correct = 0; CW.answered = false;
+  cwShow();
+  renderCWHistory();
+}
+
+function cwShow() {
+  var cq = CW_QUESTIONS[CW.current];
+  var prog = (CW.current + 1) + ' / ' + CW_QUESTIONS.length;
+  var html = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
+    + '<span style="font-size:.85rem;color:var(--muted);">Question ' + prog + '</span>'
+    + '<span style="font-size:.85rem;font-weight:600;color:var(--blue);">Score: ' + CW.correct + '/' + CW.current + '</span>'
+    + '</div>'
+    + '<div style="background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;font-size:.88rem;line-height:1.6;">'
+    + '<strong>📋 Scenario:</strong><br>' + cq.scenario + '</div>'
+    + '<div style="font-weight:600;margin-bottom:12px;font-size:.95rem;">' + cq.q + '</div>'
+    + '<div class="q-opts" id="cw-opts">';
+  cq.o.forEach(function(opt, i) {
+    html += '<button class="q-opt" onclick="cwSelect(' + i + ')">' + opt + '</button>';
   });
+  html += '</div>'
+    + '<div class="te-explain" id="cw-explain" style="display:none;"></div>'
+    + '<div style="text-align:right;margin-top:14px;">'
+    + '<button class="btn btn-primary" id="cw-next-btn" style="display:none;" onclick="cwNext()">Next →</button>'
+    + '</div>';
   document.getElementById('cw-content').innerHTML = html;
-  renderCWHistory();
+  CW.answered = false;
 }
 
-function checkCW(idx) {
-  var cq = CW_QUESTIONS[idx];
-  var input = document.getElementById('cwinput-' + idx).value.trim().toLowerCase();
-  var fb = document.getElementById('cwfb-' + idx);
-  if (input.length < 5) {
-    fb.className = 'cw-feedback bad';
-    fb.textContent = 'Please write a more complete answer.';
-    return;
+function cwSelect(idx) {
+  if (CW.answered) return;
+  CW.answered = true;
+  var cq = CW_QUESTIONS[CW.current];
+  var opts = document.querySelectorAll('#cw-opts .q-opt');
+  opts.forEach(function(btn, i) {
+    btn.disabled = true;
+    if (i === cq.c) btn.classList.add('correct');
+    else if (i === idx) btn.classList.add('wrong');
+  });
+  if (idx === cq.c) CW.correct++;
+  var expl = document.getElementById('cw-explain');
+  expl.style.display = 'block';
+  expl.innerHTML = (idx === cq.c ? '✅ <strong>Correct!</strong> ' : '❌ <strong>Incorrect.</strong> ') + cq.e;
+  document.getElementById('cw-next-btn').style.display = 'inline-block';
+}
+
+function cwNext() {
+  CW.current++;
+  if (CW.current >= CW_QUESTIONS.length) {
+    cwFinish();
+  } else {
+    cwShow();
   }
-  fb.className = 'cw-feedback good';
-  fb.innerHTML = '<strong>Model Answer:</strong><br>' + cq.answer;
-  saveCWHistory(cq.topic, new Date().toLocaleDateString());
+}
+
+function cwFinish() {
+  var pct = Math.round(CW.correct / CW_QUESTIONS.length * 100);
+  var color = pct >= 80 ? '#15803d' : pct >= 60 ? '#b45309' : '#b91c1c';
+  var bg    = pct >= 80 ? '#f0fdf4' : pct >= 60 ? '#fffbeb' : '#fef2f2';
+  var html = '<div style="text-align:center;padding:32px 16px;background:' + bg + ';border-radius:12px;border:1px solid ' + color + '20;">'
+    + '<div style="font-size:2.5rem;font-weight:800;color:' + color + ';">' + pct + '%</div>'
+    + '<div style="font-size:1.1rem;font-weight:600;margin-top:4px;">' + CW.correct + ' / ' + CW_QUESTIONS.length + ' correct</div>'
+    + '<p style="color:var(--muted);font-size:.88rem;margin-top:8px;">' + (pct >= 80 ? 'Great work on contracts!' : pct >= 60 ? 'Review the contract scenarios you missed.' : 'Keep studying Arizona purchase contract terms.') + '</p>'
+    + '<button class="btn btn-primary" style="margin-top:16px;" onclick="renderContracts()">Retry</button>'
+    + '</div>';
+  document.getElementById('cw-content').innerHTML = html;
+  saveCWHistory(CW.correct, CW_QUESTIONS.length, new Date().toLocaleDateString());
   renderCWHistory();
 }
 
-function showHint(idx) {
-  var cq = CW_QUESTIONS[idx];
-  var fb = document.getElementById('cwfb-' + idx);
-  fb.className = 'cw-feedback bad';
-  fb.innerHTML = '<strong>Hint:</strong> ' + cq.hint;
-}
-
-function saveCWHistory(topic, date) {
+function saveCWHistory(correct, total, date) {
   var hist = [];
   try { hist = JSON.parse(localStorage.getItem('cwHistory')||'[]'); } catch(e){}
-  hist.unshift({topic:topic, date:date});
+  hist.unshift({correct:correct, total:total, date:date});
   if (hist.length > 20) hist = hist.slice(0,20);
   localStorage.setItem('cwHistory', JSON.stringify(hist));
 }
@@ -964,13 +1031,20 @@ function renderCWHistory() {
   var hist = [];
   try { hist = JSON.parse(localStorage.getItem('cwHistory')||'[]'); } catch(e){}
   var el = document.getElementById('cw-history');
+  if (!el) return;
   if (hist.length === 0) {
     el.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">No sessions yet.</div>';
     return;
   }
-  el.innerHTML = hist.slice(0,5).map(h => '<div class="cw-hist-item"><span>' + h.topic + '</span><span style="color:var(--muted);">' + h.date + '</span></div>').join('');
+  el.innerHTML = hist.slice(0,5).map(function(h) {
+    var pct = Math.round(h.correct/h.total*100);
+    var c = pct >= 80 ? '#15803d' : pct >= 60 ? '#b45309' : '#b91c1c';
+    return '<div class="cw-hist-item"><span>' + h.correct + '/' + h.total + ' correct</span><span style="color:' + c + ';font-weight:600;">' + pct + '%</span><span style="color:var(--muted);">' + h.date + '</span></div>';
+  }).join('');
 }
 
+// ═══════════════════════════════════════════════════════
+// HOME STREAK
 // ═══════════════════════════════════════════════════════
 // HOME STREAK
 // ═══════════════════════════════════════════════════════
